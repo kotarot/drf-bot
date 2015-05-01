@@ -1,0 +1,796 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+"""
+DRFバッファのコーナー3-cycle手順
+"""
+
+#def reverse_one(str):
+#    if (len(str) == 1):
+#        return str + "'"
+#    elif (str[1] == "2"):
+#        return str
+#    else:
+#        return str[0]
+
+#def reverse(str):
+#    ret = []
+#    alg = str.split(' ');
+#    for a in alg.reverse():
+#        ret.append(reverse_one(a))
+#    return ' '.join(ret)
+
+
+################################
+#### CONSTANTS #################
+################################
+UFR = 0
+ULF = 1
+UBL = 2
+URB = 3
+FDR = 4
+FLD = 5
+FUL = 6
+FRU = 7
+LDF = 8
+LBD = 9
+LUB = 10
+LFU = 11
+BDL = 12
+BRD = 13
+BUR = 14
+BLU = 15
+RDB = 16
+RFD = 17
+RUF = 18
+RBU = 19
+DBR = 20
+DLB = 21
+DFL = 22
+DRF = 23
+
+cornersl = ['あ', 'い',  'う', 'か',
+            'き', 'く', 'こ', 'し',
+            'す', 'た', 'つ', 'て',
+            'と', 'な', 'に', 'の',
+            'は', 'も', 'ら', 'り',
+            'る', 'れ', 'ん', '-']
+cornerss = ['UFR', 'ULF', 'UBL', 'URB',
+            'FDR', 'FLD', 'FUL', 'FRU',
+            'LDF', 'LBD', 'LUB', 'LFU',
+            'BDL', 'BRD', 'BUR', 'BLU',
+            'RDB', 'RFD', 'RUF', 'RBU',
+            'DBR', 'DLB', 'DFL', 'DRF']
+
+# セットアップ用プレムーブ (バッファが動くものは除外)
+premoves = ["U", "U2", "U'",
+            "L", "L2", "L'",
+            "B", "B2", "B'"]
+#premoves = ["U", "U2", "U'",
+#            "F", "F2", "F'",
+#            "L", "L2", "L'",
+#            "B", "B2", "B'",
+#            "R", "R2", "R'",
+#            "D", "D2", "D'"]
+################################
+
+
+# 3-cycleの(バッファ以外の)位置とMoveを受け取って
+# Moveの実行後に位置がどこに移動するか返す
+def movepos(cx, cy, move):
+    return (moveposone(cx, move), moveposone(cy, move))
+
+def moveposone(pos, move):
+    rot = {
+        "U": 1, "U2": 2, "U'": 3,
+        "F": 1, "F2": 2, "F'": 3,
+        "L": 1, "L2": 2, "L'": 3,
+        "B": 1, "B2": 2, "B'": 3,
+        "R": 1, "R2": 2, "R'": 3,
+        "D": 1, "D2": 2, "D'": 3,
+    }
+
+    u_face = [UFR, ULF, UBL, URB]
+    u_rowc = [FRU, LFU, BLU, RBU]
+    u_row  = [RUF, FUL, LUB, BUR]
+    f_face = [FDR, FLD, FUL, FRU]
+    f_rowc = [DRF, LDF, ULF, RUF]
+    f_row  = [RFD, DFL, LFU, UFR]
+    l_face = [LDF, LBD, LUB, LFU]
+    l_rowc = [DFL, BDL, UBL, FUL]
+    l_row  = [FLD, DLB, BLU, ULF]
+    b_face = [BDL, BRD, BUR, BLU]
+    b_rowc = [DLB, RDB, URB, LUB]
+    b_row  = [LBD, DBR, RBU, UBL]
+    r_face = [RDB, RFD, RUF, RBU]
+    r_rowc = [DBR, FDR, UFR, BUR]
+    r_row  = [BRD, DRF, FRU, URB]
+    d_face = [DBR, DLB, DFL, DRF]
+    d_rowc = [BRD, LBD, FLD, RFD]
+    d_row  = [RDB, BDL, LDF, FDR]
+
+    if move == "U" or move == "U2" or move == "U'":
+        if pos in u_face:
+            return u_face[(u_face.index(pos) + rot[move]) % 4]
+        elif pos in u_rowc:
+            return u_rowc[(u_rowc.index(pos) + rot[move]) % 4]
+        elif pos in u_row:
+            return u_row[(u_row.index(pos) + rot[move]) % 4]
+    if move == "F" or move == "F2" or move == "F'":
+        if pos in f_face:
+            return f_face[(f_face.index(pos) + rot[move]) % 4]
+        elif pos in f_rowc:
+            return f_rowc[(f_rowc.index(pos) + rot[move]) % 4]
+        elif pos in f_row:
+            return u_row[(f_row.index(pos) + rot[move]) % 4]
+    if move == "L" or move == "L2" or move == "L'":
+        if pos in l_face:
+            return l_face[(l_face.index(pos) + rot[move]) % 4]
+        elif pos in l_rowc:
+            return l_rowc[(l_rowc.index(pos) + rot[move]) % 4]
+        elif pos in l_row:
+            return l_row[(l_row.index(pos) + rot[move]) % 4]
+    if move == "B" or move == "B2" or move == "B'":
+        if pos in b_face:
+            return b_face[(b_face.index(pos) + rot[move]) % 4]
+        elif pos in b_rowc:
+            return b_rowc[(b_rowc.index(pos) + rot[move]) % 4]
+        elif pos in b_row:
+            return b_row[(b_row.index(pos) + rot[move]) % 4]
+    if move == "R" or move == "R2" or move == "R'":
+        if pos in r_face:
+            return r_face[(r_face.index(pos) + rot[move]) % 4]
+        elif pos in r_rowc:
+            return r_rowc[(r_rowc.index(pos) + rot[move]) % 4]
+        elif pos in r_row:
+            return r_row[(r_row.index(pos) + rot[move]) % 4]
+    if move == "D" or move == "D2" or move == "D'":
+        if pos in d_face:
+            return d_face[(d_face.index(pos) + rot[move]) % 4]
+        elif pos in d_rowc:
+            return d_rowc[(d_rowc.index(pos) + rot[move]) % 4]
+        elif pos in d_row:
+            return d_row[(d_row.index(pos) + rot[move]) % 4]
+
+    return pos
+
+
+# 3-cycleチェック
+def check_cycle(cx, cy):
+    # 同じ文字
+    if cx == cy:
+        return ("X", "<same>")
+    # バッファ絡み
+    elif cx == FDR or cx == RFD or cx == DRF or cy == FDR or cy == RFD or cy == DRF:
+        return ("X", "<buffer>")
+    # UFR/FRU/RUF
+    elif (cx == UFR and (cy == FRU or cy == RUF)) or (cx == FRU and (cy == UFR or cy == RUF)) or (cx == RUF and (cy == UFR or cy == FRU)):
+        return ("X", "<UFR>")
+    # ULF/LFU/FUL
+    elif (cx == ULF and (cy == FUL or cy == LFU)) or (cx == FUL and (cy == ULF or cy == LFU)) or (cx == LFU and (cy == ULF or cy == FUL)):
+        return ("X", "<ULF>")
+    # UBL/BLU/LUB
+    elif (cx == UBL and (cy == LUB or cy == BLU)) or (cx == LUB and (cy == UBL or cy == BLU)) or (cx == BLU and (cy == UBL or cy == LUB)):
+        return ("X", "<UBL>")
+    # URB/RBU/BUR
+    elif (cx == URB and (cy == BUR or cy == RBU)) or (cx == BUR and (cy == URB or cy == RBU)) or (cx == RBU and (cy == URB or cy == BUR)):
+        return ("X", "<URB>")
+    # DFL/FLD/LDF
+    elif (cx == DFL and (cy == FLD or cy == LDF)) or (cx == FLD and (cy == DFL or cy == LDF)) or (cx == LDF and (cy == DFL or cy == FLD)):
+        return ("X", "<DFL>")
+    # DLB/LBD/BDL
+    elif (cx == DLB and (cy == LBD or cy == BDL)) or (cx == LBD and (cy == DLB or cy == BDL)) or (cx == BDL and (cy == DLB or cy == LBD)):
+        return ("X", "<DLB>")
+    # DBR/BRD/RDB
+    elif (cx == DBR and (cy == BRD or cy == RDB)) or (cx == BRD and (cy == DBR or cy == RDB)) or (cx == RDB and (cy == DBR or cy == BRD)):
+        return ("X", "<DBR>")
+
+    return ("", "")
+
+
+# D面インターチェンジパターン
+def pattern_interchange_d(cx, cy, premove):
+    interchange = {
+        DBR: "D'",
+        DLB: "D2",
+        DFL: "D"
+    }
+    insert = {
+        RUF: "R U R'",
+        LFU: "R U' R'",
+        BLU: "R U2 R'",
+        FRU: "F' U' F", # "y L' U' L y'",
+        BUR: "F' U F", # "y L' U L y'",
+        LUB: "F' U2 F", # "y L' U2 L y'",
+        UFR: "R2 U R2 U' R2"
+    }
+    # インサート手順の手数 (持ち替え含む)
+    insert_cost = {
+        RUF: 3,
+        LFU: 3,
+        BLU: 3,
+        FRU: 5,
+        BUR: 5,
+        LUB: 5,
+        UFR: 5
+    }
+
+    # D面インターチェンジ (1)
+    if (cx == DBR or cx == DLB or cx == DFL) and (cy == RUF or cy == LFU or cy == BLU or cy == FRU or cy == BUR or cy == LUB or cy == UFR):
+        if premove == "":
+            return ("[" + insert[cy] + ", " + interchange[cx] + "]", "D面インターチェンジ", insert_cost[cy])
+        else:
+            return ("[" + premove + ": " + insert[cy] + ", " + interchange[cx] + "]", "1手セットアップ＋D面インターチェンジ", insert_cost[cy])
+
+    # D面インターチェンジ (2)
+    elif (cy == DBR or cy == DLB or cy == DFL) and (cx == RUF or cx == LFU or cx == BLU or cx == FRU or cx == BUR or cx == LUB or cx == UFR):
+        if premove == "":
+            return ("[" + interchange[cy] + ", " + insert[cx] + "]", "D面インターチェンジ", insert_cost[cx])
+        else:
+            return ("[" + premove + ": " + interchange[cy] + ", " + insert[cx] + "]", "1手セットアップ＋D面インターチェンジ", insert_cost[cx])
+
+    return ("", "", -1)
+
+
+# U面インターチェンジパターン
+def pattern_interchange_u(cx, cy, premove):
+    pos_on_u = {
+        UFR: 0, FRU: 0, RUF: 0,
+        ULF: 1, LFU: 1, FUL: 1,
+        UBL: 2, BLU: 2, LUB: 2,
+        URB: 3, RBU: 3, BUR: 3
+    }
+
+    # U面インターチェンジ (1)
+    if (cx == UFR or cx == ULF or cx == UBL or cx == URB) and (cy == UFR or cy == ULF or cy == UBL or cy == URB):
+        if cx == UFR: setup = ""
+        elif cx == ULF: setup = "U'"
+        elif cx == UBL: setup = "U2"
+        elif cx == URB: setup = "U"
+        insert = "R2 D' R2 D R2" #insert = "R' F' R2 F R"
+        d = pos_on_u[cy] - pos_on_u[cx]
+        if d == 1 or d == -3: interchange = "U'"
+        elif d == 2 or d == -2: interchange = "U2"
+        elif d == 3 or d == -1: interchange = "U"
+        if premove == "":
+            if setup == "":
+                return ("[" + insert + ", " + interchange + "]", "U面インターチェンジ", 5)
+            elif cy == UFR:
+                return ("[" + setup + ", " + insert + "]", "U面インターチェンジ", 5)
+            else:
+                return ("[" + setup + ": " + insert + ', ' + interchange + "]", "U面インターチェンジ", 7)
+        else:
+            if setup == "":
+                return ("[" + premove + ": " + insert + ", " + interchange + "]", "1手セットアップ＋U面インターチェンジ", 5)
+            elif cy == UFR:
+                return ("[" + premove + ": " + setup + ", " + insert + "]", "1手セットアップ＋U面インターチェンジ", 5)
+            else:
+                return ("[" + premove + " " + setup + ": " + insert + ', ' + interchange + "]", "1手セットアップ＋U面インターチェンジ", 7)
+
+    # U面インターチェンジ (2)
+    elif (cx == FRU or cx == LFU or cx == BLU or cx == RBU) and (cy == FRU or cy == LFU or cy == BLU or cy == RBU):
+        if cx == FRU: setup = "U2"
+        elif cx == LFU: setup = "U"
+        elif cx == BLU: setup = ""
+        elif cx == RBU: setup = "U'"
+        insert = "L' D2 L"
+        d = pos_on_u[cy] - pos_on_u[cx]
+        if d == 1 or d == -3: interchange = "U'"
+        elif d == 2 or d == -2: interchange = "U2"
+        elif d == 3 or d == -1: interchange = "U"
+        if premove == "":
+            if setup == "":
+                return ("[" + insert + ", " + interchange + "]", "U列インターチェンジ", 3)
+            elif (cy == BLU):
+                return ("[" + setup + ", " + insert + "]", "U列インターチェンジ", 3)
+            else:
+                return ("[" + setup + ": " + insert + ', ' + interchange + "]", "U列インターチェンジ", 5)
+        else:
+            if setup == "":
+                return ("[" + premove + ": " + insert + ", " + interchange + "]", "1手セットアップ＋U列インターチェンジ", 3)
+            elif (cy == BLU):
+                return ("[" + premove + ": " + setup + ", " + insert + "]", "1手セットアップ＋U列インターチェンジ", 3)
+            else:
+                return ("[" + premove + " " + setup + ": " + insert + ', ' + interchange + "]", "1手セットアップ＋U列インターチェンジ", 5)
+
+    # U面インターチェンジ (3)
+    elif (cx == RUF or cx == FUL or cx == LUB or cx == BUR) and (cy == RUF or cy == FUL or cy == LUB or cy == BUR):
+        if cx == RUF: setup = ""
+        elif cx == FUL: setup = "U'"
+        elif cx == LUB: setup = "U2"
+        elif cx == BUR: setup = "U"
+        insert = "R' D' R"
+        d = pos_on_u[cy] - pos_on_u[cx]
+        if d == 1 or d == -3: interchange = "U'"
+        elif d == 2 or d == -2: interchange = "U2"
+        elif d == 3 or d == -1: interchange = "U"
+        if premove == "":
+            if setup == "":
+                return ("[" + insert + ", " + interchange + "]", "U列インターチェンジ", 3)
+            elif cy == RUF:
+                return ("[" + setup + ", " + insert + "]", "U列インターチェンジ", 3)
+            else:
+                return ("[" + setup + ": " + insert + ', ' + interchange + "]", "U列インターチェンジ", 5)
+        else:
+            if setup == "":
+                return ("[" + premove + ": " + insert + ", " + interchange + "]", "1手セットアップ＋U列インターチェンジ", 3)
+            elif cy == RUF:
+                return ("[" + premove + ": " + setup + ", " + insert + "]", "1手セットアップ＋U列インターチェンジ", 3)
+            else:
+                return ("[" + premove + " " + setup + ": " + insert + ', ' + interchange + "]", "1手セットアップ＋U列インターチェンジ", 5)
+
+    return ("", "", -1)
+
+
+# L面インターチェンジパターン
+def pattern_interchange_l(cx, cy, premove):
+    pos_on_l = {
+        ULF: 0, LFU: 0, FUL: 0,
+        UBL: 1, BLU: 1, LUB: 1,
+        DLB: 2, LBD: 2, BDL: 2,
+        DFL: 3, FLD: 3, LDF: 3
+    }
+
+    # L面インターチェンジ (1)
+    if (cx == LFU or cx == LUB or cx == LBD or cx == LDF) and (cy == LFU or cy == LUB or cy == LBD or cy == LDF):
+        if cx == LFU: setup = ""
+        elif cx == LUB: setup = "L"
+        elif cx == LBD: setup = "L2"
+        elif cx == LDF: setup = "L'"
+        insert = "U' R U"
+        d = pos_on_l[cy] - pos_on_l[cx]
+        if d == 1 or d == -3: interchange = "L"
+        elif d == 2 or d == -2: interchange = "L2"
+        elif d == 3 or d == -1: interchange = "L'"
+        if premove == "":
+            if setup == "":
+                return ("[" + insert + ", " + interchange + "]", "L面インターチェンジ", 3)
+            elif cy == LFU:
+                return ("[" + setup + ", " + insert + "]", "L面インターチェンジ", 3)
+            else:
+                return ("[" + setup + ": " + insert + ", " + interchange + "]", "L面インターチェンジ", 5)
+        else:
+            if setup == "":
+                return ("[" + premove + ": " + insert + ", " + interchange + "]", "1手セットアップ＋L面インターチェンジ", 3)
+            elif cy == LFU:
+                return ("[" + premove + ": " + setup + ", " + insert + "]", "1手セットアップ＋L面インターチェンジ", 3)
+            else:
+                return ("[" + premove + " " + setup + ": " + insert + ", " + interchange + "]", "1手セットアップ＋L面インターチェンジ", 5)
+
+    # L面インターチェンジ (2)
+    elif (cx == ULF or cx == BLU or cx == DLB or cx == FLD) and (cy == ULF or cy == BLU or cy == DLB or cy == FLD):
+        if cx == ULF: setup = "D"
+        elif cx == BLU: setup = "D2"
+        elif cx == DLB: setup = "D'"
+        elif cx == FLD: setup = ""
+        insert = "R2 U R2 U' R2"
+        d = pos_on_l[cy] - pos_on_l[cx]
+        if d == 1 or d == -3: interchange = "D"
+        elif d == 2 or d == -2: interchange = "D2"
+        elif d == 3 or d == -1: interchange = "D'"
+        if premove == "":
+            if setup == "":
+                return ("[z': " + insert + ", " + interchange + "]", "L列インターチェンジ", 5)
+            elif cy == ULF:
+                return ("[z': " + setup + ", " + insert + "]", "L列インターチェンジ", 5)
+            else:
+                return ("[z' " + setup + ": " + insert + ", " + interchange + "]", "L列インターチェンジ", 7)
+        else:
+            if setup == "":
+                return ("[" + premove + " z: " + insert + ", " + interchange + "]", "1手セットアップ＋L列インターチェンジ", 5)
+            elif cy == ULF:
+                return ("[" + premove + " z: " + setup + ", " + insert + "]", "1手セットアップ＋L列インターチェンジ", 5)
+            else:
+                return ("[" + premove + " z " + setup + ": " + insert + ", " + interchange + "]", "1手セットアップ＋L列インターチェンジ", 7)
+
+    # L面インターチェンジ (3)
+    elif (cx == FUL or cx == UBL or cx == BDL or cx == DFL) and (cy == FUL or cy == UBL or cy == BDL or cy == DFL):
+        if cx == FUL: setup = "L'"
+        elif cx == UBL: setup = ""
+        elif cx == BDL: setup = "L"
+        elif cx == DFL: setup = "L2'"
+        insert = "U R2 U'"
+        d = pos_on_l[cy] - pos_on_l[cx]
+        if d == 1 or d == -3: interchange = "L"
+        elif d == 2 or d == -2: interchange = "L2"
+        elif d == 3 or d == -1: interchange = "L'"
+        if premove == "":
+            if setup == "":
+                return ("[" + insert + ", " + interchange + "]", "L列インターチェンジ", 3)
+            elif cy == UBL:
+                return ("[" + setup + ", " + insert + "]", "L列インターチェンジ", 3)
+            else:
+                return ("[" + setup + ": " + insert + ", " + interchange + "]", "L列インターチェンジ", 5)
+        else:
+            if setup == "":
+                return ("[" + premove + ": " + insert + ", " + interchange + "]", "1手セットアップ＋L列インターチェンジ", 3)
+            elif cy == UBL:
+                return ("[" + premove + ": " + setup + ", " + insert + "]", "1手セットアップ＋L列インターチェンジ", 3)
+            else:
+                return ("[" + premove + " " + setup + ": " + insert + ", " + interchange + "]", "1手セットアップ＋L列インターチェンジ", 5)
+
+    return ("", "", -1)
+
+
+# B面インターチェンジパターン
+def pattern_interchange_b(cx, cy, premove):
+    pos_on_b = {
+        UBL: 0, BLU: 0, LUB: 0,
+        URB: 1, RBU: 1, BUR: 1,
+        DBR: 2, BRD: 2, RDB: 2,
+        DLB: 3, LBD: 3, BDL: 3
+    }
+
+    # B面インターチェンジ (1)
+    if (cx == BLU or cx == BUR or cx == BRD or cx == BDL) and (cy == BLU or cy == BUR or cy == BRD or cy == BDL):
+        if cx == BLU: setup = "R'"
+        elif cx == BUR: setup = ""
+        elif cx == BRD: setup = "R"
+        elif cx == BDL: setup = "R2'"
+        insert = "U L' U'"
+        d = pos_on_b[cy] - pos_on_b[cx]
+        if d == 1 or d == -3: interchange = "R"
+        elif d == 2 or d == -2: interchange = "R2"
+        elif d == 3 or d == -1: interchange = "R'"
+        if premove == "":
+            if setup == "":
+                return ("[y: " + insert + ", " + interchange + "]", "B面インターチェンジ", 3)
+            elif cy == BUR:
+                return ("[y: " + setup + ", " + insert + "]", "B面インターチェンジ", 3)
+            else:
+                return ("[y " + setup + ": " + insert + ", " + interchange + "]", "B面インターチェンジ", 5)
+        else:
+            if setup == "":
+                return ("[" + premove + " y: " + insert + ", " + interchange + "]", "1手セットアップ＋B面インターチェンジ", 3)
+            elif cy == BUR:
+                return ("[" + premove + " y: " + setup + ", " + insert + "]", "1手セットアップ＋B面インターチェンジ", 3)
+            else:
+                return ("[" + premove + " y " + setup + ": " + insert + ", " + interchange + "]", "1手セットアップ＋B面インターチェンジ", 5)
+
+    # B面インターチェンジ (2)
+    elif (cx == LUB or cx == URB or cx == RDB or cx == DLB) and (cy == LUB or cy == URB or cy == RDB or cy == DLB):
+        if cx == LUB: setup = "D2"
+        elif cx == URB: setup = "D'"
+        elif cx == RDB: setup = ""
+        elif cx == DLB: setup = "D"
+        insert = "R2 U R2 U' R2"
+        d = pos_on_b[cy] - pos_on_b[cx]
+        if d == 1 or d == -3: interchange = "D"
+        elif d == 2 or d == -2: interchange = "D2"
+        elif d == 3 or d == -1: interchange = "D'"
+        if premove == "":
+            if setup == "":
+                return ("[x: " + insert + ", " + interchange + "]", "B列インターチェンジ", 5)
+            elif cy == RDB:
+                return ("[x: " + setup + ", " + insert + "]", "B列インターチェンジ", 5)
+            else:
+                return ("[x " + setup + ": " + insert + ", " + interchange + "]", "B列インターチェンジ", 7)
+        else:
+            if setup == "":
+                return ("[" + premove + " x: " + insert + ", " + interchange + "]", "1手セットアップ＋B列インターチェンジ", 5)
+            elif cy == RDB:
+                return ("[" + premove + " x: " + setup + ", " + insert + "]", "1手セットアップ＋B列インターチェンジ", 5)
+            else:
+                return ("[" + premove + " x " + setup + ": " + insert + ", " + interchange + "]", "1手セットアップ＋B列インターチェンジ", 7)
+
+    # B面インターチェンジ (3)
+    elif (cx == UBL or cx == RBU or cx == DBR or cx == LBD) and (cy == UBL or cy == RBU or cy == DBR or cy == LBD):
+        if cx == UBL: setup = ""
+        elif cx == RBU: setup = "R"
+        elif cx == DBR: setup = "R2"
+        elif cx == LBD: setup = "R"
+        insert = "U' L2 U"
+        d = pos_on_b[cy] - pos_on_b[cx]
+        if d == 1 or d == -3: interchange = "R"
+        elif d == 2 or d == -2: interchange = "R2"
+        elif d == 3 or d == -1: interchange = "R'"
+        if premove == "":
+            if setup == "":
+                return ("[y: " + insert + ", " + interchange + "]", "B列インターチェンジ", 3)
+            elif cy == RDB:
+                return ("[y: " + setup + ", " + insert + "]", "B列インターチェンジ", 3)
+            else:
+                return ("[y " + setup + ": " + insert + ", " + interchange + "]", "B列インターチェンジ", 5)
+        else:
+            if setup == "":
+                return ("[" + premove + " y: " + insert + ", " + interchange + "]", "1手セットアップ＋B列インターチェンジ", 3)
+            elif cy == RDB:
+                return ("[" + premove + " y: " + setup + ", " + insert + "]", "1手セットアップ＋B列インターチェンジ", 3)
+            else:
+                return ("[" + premove + " y " + setup + ": " + insert + ", " + interchange + "]", "1手セットアップ＋B列インターチェンジ", 5)
+
+    return ("", "", -1)
+
+
+# A-permパターン
+def pattern_aperm(cx, cy, premove):
+    setup = ""
+    algorithm = ""
+
+    # A-permのパターン (F面)
+    if cx == RUF and cy == ULF:
+        algorithm = "R2 U2 R D R' U2 R D' R"
+        comment = "F面A-perm"
+    elif cx == ULF and cy == RUF:
+        algorithm = "R' D R' U2 R D' R' U2 R2"
+        comment = "F面A-perm"
+    elif cx == RUF and cy == LDF:
+        algorithm = "R U' R D2 R' U R D2 R2"
+        comment = "F面A-perm"
+    elif cx == LDF and cy == RUF:
+        algorithm = "R2 D2 R' U' R D2 R' U R'"
+        comment = "F面A-perm"
+    elif cx == ULF and cy == LDF:
+        algorithm = "L2 D2 L U L' D2 L U' L"
+        comment = "F面A-perm"
+    elif cx == LDF and cy == ULF:
+        algorithm = "L' U L' D2 L U' L' D2 L2"
+        comment = "F面A-perm"
+
+    # A-permのパターン (R面)
+    elif cx == FRU and cy == URB:
+        setup = "y"
+        algorithm = "U' R U' L2 U R' U' L2 U2"
+        comment = "R面A-perm"
+    elif cx == URB and cy == FRU:
+        setup = "y"
+        algorithm = "U2 L2 U R U' L2 U R' U"
+        comment = "R面A-perm"
+    elif cx == FRU and cy == BRD:
+        setup = "y"
+        algorithm = "L' U L' D2 L U' L' D2 L2"
+        comment = "R面A-perm"
+    elif cx == BRD and cy == FRU:
+        setup = "y"
+        algorithm = "L2 D2 L U L' D2 L U' L"
+        comment = "R面A-perm"
+    elif cx == URB and cy == BRD:
+        setup = "y"
+        algorithm = "R2 D2 R' U' R D2 R' U R'"
+        comment = "R面A-perm"
+    elif cx == BRD and cy == URB:
+        setup = "y"
+        algorithm = "R U' R D2 R' U R D2 R2"
+        comment = "R面A-perm"
+
+    # A-permのパターン (D面)
+    elif cx == DBR and cy == DLB:
+        setup = "x"
+        algorithm = "R2 D2 R' U' R D2 R' U R'"
+        comment = "D面A-perm"
+    elif cx == DLB and cy == DBR:
+        setup = "x"
+        algorithm = "R U' R D2 R' U R D2 R2"
+        comment = "D面A-perm"
+    elif cx == DBR and cy == DFL:
+        setup = "x"
+        algorithm = "R' D R' U2 R D' R' U2 R2"
+        comment = "D面A-perm"
+    elif cx == DFL and cy == DBR:
+        setup = "x"
+        algorithm = "R2 U2 R D R' U2 R D' R"
+        comment = "D面A-perm"
+    elif cx == DLB and cy == DFL:
+        setup = "x"
+        algorithm = "U' R U' L2 U R' U' L2 U2"
+        comment = "D面A-perm"
+    elif cx == DFL and cy == DLB:
+        setup = "x"
+        algorithm = "U2 L2 U R U' L2 U R' U"
+        comment = "D面A-perm"
+
+    if algorithm != "":
+        if premove == "":
+            if setup == "":
+                return ("[" + algorithm + "]", comment)
+            else:
+                return ("[" + setup + ": " + algorithm + "]", comment)
+        else:
+            if setup == "":
+                return ("[" + premove + ": " + algorithm + "]", "1手セットアップ＋" + comment)
+            else:
+                return ("[" + premove + " " + setup + ": " + algorithm + "]", "1手セットアップ＋" + comment)
+    else:
+        return ("", "")
+
+
+################################
+# 手順生成
+alg = {}
+for cx in range(0, 24):
+    for cy in range(0, 24):
+        alg[(cx, cy)] = []
+
+        # 3-cycleチェック
+        res = check_cycle(cx, cy)
+        if res[0] != "":
+            alg[(cx, cy)].append(res)
+            continue
+
+
+        ################################
+        #### インターチェンジパターン
+        without_setups_high = []
+        without_setups_low = []
+        with_setups_high = []
+        with_setups_low = []
+
+        # B面インターチェンジ
+        res_b = pattern_interchange_b(cx, cy, "")
+        if res_b[0] != "":
+            without_setups_high.append(res_b)
+
+        # 1手セットアップ＋B面インターチェンジ
+        else:
+            for premove in premoves:
+                (ncx, ncy) = movepos(cx, cy, premove)
+                res = pattern_interchange_b(ncx, ncy, premove)
+                if res[0] != "":
+                    if res[2] <= 3:
+                        with_setups_high.insert(0, (res[0], res[1]))
+                    else:
+                        with_setups_low.insert(0, (res[0], res[1]))
+
+        # L面インターチェンジ
+        res_l = pattern_interchange_l(cx, cy, "")
+        if res_l[0] != "":
+            without_setups_high.append(res_l)
+
+        # 1手セットアップ＋L面インターチェンジ
+        else:
+            for premove in premoves:
+                (ncx, ncy) = movepos(cx, cy, premove)
+                res = pattern_interchange_l(ncx, ncy, premove)
+                if res[0] != "":
+                    if res[2] <= 3:
+                        with_setups_high.insert(0, (res[0], res[1]))
+                    else:
+                        with_setups_low.insert(0, (res[0], res[1]))
+
+        # U面インターチェンジ
+        res_u = pattern_interchange_u(cx, cy, "")
+        if res_u[0] != "":
+            without_setups_high.append((res_u[0], res_u[1]))
+
+        # 1手セットアップ＋U面インターチェンジ
+        else:
+            for premove in premoves:
+                (ncx, ncy) = movepos(cx, cy, premove)
+                res = pattern_interchange_u(ncx, ncy, premove)
+                if res[0] != "":
+                    if res[2] <= 3:
+                        with_setups_high.insert(0, (res[0], res[1]))
+                    else:
+                        with_setups_low.insert(0, (res[0], res[1]))
+
+        # D面インターチェンジ
+        res_d = pattern_interchange_d(cx, cy, "")
+        if res_d[0] != "":
+            without_setups_high.append((res_d[0], res_d[1]))
+
+        # 1手セットアップ＋D面インターチェンジ
+        else:
+            for premove in premoves:
+                (ncx, ncy) = movepos(cx, cy, premove)
+                res = pattern_interchange_d(ncx, ncy, premove)
+                if res[0] != "":
+                    if res[2] <= 3:
+                        with_setups_high.insert(0, (res[0], res[1]))
+                    else:
+                        with_setups_low.insert(0, (res[0], res[1]))
+
+        alg[(cx, cy)] = without_setups_high + without_setups_low + with_setups_high + with_setups_low
+
+
+        # A-permのパターン
+        res_a = pattern_aperm(cx, cy, "")
+        if res_a[0] != "":
+            alg[(cx, cy)].insert(0, res_a)
+
+        # 1手セットアップ＋A-permのパターン
+        else:
+            for premove in premoves:
+                (ncx, ncy) = movepos(cx, cy, premove)
+                res = pattern_aperm(ncx, ncy, premove)
+                if res[0] != "":
+                    alg[(cx, cy)].insert(0, res)
+
+
+        ################################
+        #### 個別対応
+
+        # R2/L2パターン (持ち替えなし)
+        if cx == DFL and cy == URB:
+            alg[(cx, cy)].insert(0, ("[U' L2 U, R2]", "R2法"))
+        elif cx == URB and cy == DFL:
+            alg[(cx, cy)].insert(0, ("[R2, U' L2 U]", "R2法"))
+        elif cx == DFL and cy == UBL:
+            alg[(cx, cy)].insert(0, ("[L2, U R2 U']", "L2法"))
+        elif cx == UBL and cy == DFL:
+            alg[(cx, cy)].insert(0, ("[U R2 U', L2]", "L2法"))
+
+        # R2/L2パターン (持ち替えあり)
+        elif cx == DBR and cy == UBL:
+            alg[(cx, cy)].insert(0, ("[y: R2, U' L2 U]", "R2法"))
+        elif cx == UBL and cy == DBR:
+            alg[(cx, cy)].insert(0, ("[y: U' L2 U, R2]", "R2法"))
+        elif cx == DBR and cy == ULF:
+            alg[(cx, cy)].insert(0, ("[y: U R2 U', L2]", "L2法"))
+        elif cx == ULF and cy == DBR:
+            alg[(cx, cy)].insert(0, ("[y: L2, U R2 U']", "L2法"))
+
+        # R面インターチェンジ
+        # ちなみにこの2パターン (「すな」と「なす」) は他の方法では無理
+        elif cx == LDF and cy == BRD:
+            alg[(cx, cy)].insert(0, ("[R, D' L' D]", "R面インターチェンジ"))
+        elif cx == BRD and cy == LDF:
+            alg[(cx, cy)].insert(0, ("[D' L' D, R]", "R面インターチェンジ"))
+
+        # サイクリックシフト TODO: 他にも適用
+        # 2015-04-28 たくくんさんより
+        # https://twitter.com/gohamtakanai/status/593033973820891137
+        elif cx == FLD and cy == LFU:
+            alg[(cx, cy)].insert(0, ("R U' F2 U R' U' R F2 R' U", "サイクリックシフト"))
+        elif cx == LFU and cy == FLD:
+            alg[(cx, cy)].insert(0, ("U' R F2 R' U R U' F2 U R'", "サイクリックシフト"))
+
+        # 2015-04-28 うえしゅうより
+        # https://twitter.com/uesyuu_tkb/status/593051080646234114
+        elif cx == UFR and cy == RBU:
+            alg[(cx, cy)].insert(0, ("[D': F2, R U R2 U' R']", "1手セットアップ＋F面インターチェンジ"))
+        elif cx == RBU and cy == UFR:
+            alg[(cx, cy)].insert(0, ("[D': R U R2 U' R', F2]", "1手セットアップ＋F面インターチェンジ"))
+
+        # 2015-04-29 たくくんさんより
+        # https://twitter.com/gohamtakanai/status/593205722856300545
+        # https://twitter.com/bot_ulb/status/593207422656712704
+        elif cx == BLU and cy == URB:
+            alg[(cx, cy)].insert(0, ("[D': R'; U2, R' D R]", "セットアップ＋A9"))
+        elif cx == URB and cy == BLU:
+            alg[(cx, cy)].insert(0, ("[D': R'; R' D R, U2]", "セットアップ＋A9"))
+
+        # 2015-04-30 こだまくんより
+        # https://twitter.com/ceylon_cube/status/593428663674081280
+        elif cx == BRD and cy == DLB:
+            alg[(cx, cy)].insert(0, ("[R: F' U' F, D2]", "1手セットアップ＋D面インターチェンジ"))
+        elif cx == DLB and cy == BRD:
+            alg[(cx, cy)].insert(0, ("[R: D2, F' U' F]", "1手セットアップ＋D面インターチェンジ"))
+        # 上の発展版だけどB2セットアップとどっちがいいか微妙
+        #elif cx == BRD and cy == DFL:
+        #    alg[(cx, cy)].insert(0, ("[R: F' U' F, D']", "1手セットアップ＋D面インターチェンジ"))
+        #elif cx == DFL and cy == BRD:
+        #    alg[(cx, cy)].insert(0, ("[R: D', F' U' F]", "1手セットアップ＋D面インターチェンジ"))
+
+
+        if len(alg[(cx, cy)]) == 0:
+            alg[(cx, cy)].append(("T", "<TODO>"))
+
+
+# 検索用に文字列をキーにした辞書で返す
+def get():
+    buffer = {}
+    for cx in range(0, 24):
+        for cy in range(0, 24):
+            buffer[(cornerss[cx], cornerss[cy])] = alg[(cx, cy)][0]
+    return buffer
+
+
+# 単体実行では標準出力に表示
+if __name__ == '__main__':
+    num_todo = 0
+
+    for cx in range(0, 24):
+        print("    # " + cornerss[cx] + " : " + cornersl[cx])
+        for cy in range(0, 24):
+            algs = []
+            for a in alg[(cx, cy)]:
+                algs.append('("' + a[0] + '", "' + a[1] + '")')
+            print('    ("' + cornerss[cx] + '", "' + cornerss[cy] + '"): [' + ", ".join(algs) + '],')
+
+            if len(alg[(cx, cy)]) == 1 and alg[(cx, cy)][0][0] == "T":
+                num_todo = num_todo + 1
+
+        print("");
+
+    print("Number of TODO: ", num_todo)
+    print("")
