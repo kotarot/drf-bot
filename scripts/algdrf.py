@@ -5,6 +5,22 @@
 DRFバッファのコーナー3-cycle手順
 """
 
+import sys
+import os
+import random
+
+# Python Twitter Tools
+# https://github.com/sixohsix/twitter
+from twitter import *
+
+
+# Configurations from 環境変数
+CONSUMER_KEY        = os.environ.get("DRFBOT_CONSUMER_KEY")
+CONSUMER_SECRET     = os.environ.get("DRFBOT_CONSUMER_SECRET")
+ACCESS_TOKEN        = os.environ.get("DRFBOT_ACCESS_TOKEN")
+ACCESS_TOKEN_SECRET = os.environ.get("DRFBOT_ACCESS_TOKEN_SECRET")
+
+
 #def reverse_one(str):
 #    if (len(str) == 1):
 #        return str + "'"
@@ -775,8 +791,7 @@ def get():
     return buffer
 
 
-# 単体実行では標準出力に表示
-if __name__ == '__main__':
+def show_all():
     num_todo = 0
 
     for cx in range(0, 24):
@@ -794,3 +809,46 @@ if __name__ == '__main__':
 
     print("Number of TODO: ", num_todo)
     print("")
+
+
+# 手順をランダム選択
+def select_random_alg():
+    while True:
+        x, y = random.randint(0, 23), random.randint(0, 23)
+        a = alg[(x, y)][0]
+        if a[0][0] != "X":
+            cycle = "DRF->%s->%s" % (cornerss[x], cornerss[y])
+            return (cycle, a[0], a[1])
+
+
+def random_post():
+    ra = select_random_alg()
+    status = "%s:\n%s (%s)\n\n(´-`).｡oO( もっといい手順あれば教えて!! ) #今日のDRFbuffer" % (ra[0], ra[1], ra[2])
+    print(status)
+
+    # Twitter OAuth 認証 + REST
+    auth = OAuth(ACCESS_TOKEN, ACCESS_TOKEN_SECRET, CONSUMER_KEY, CONSUMER_SECRET)
+    t = Twitter(auth=auth)
+    try:
+        t.statuses.update(status=status)
+    except TwitterError as e:
+        print("[Exception] TwitterError!")
+        print(e)
+    except TwitterHTTPError as e:
+        print("[Exception] TwitterHTTPError!")
+        print(e)
+
+
+# 単体実行では標準出力に表示
+# "--random-post" オプションでランダム投稿
+if __name__ == '__main__':
+    argvs = sys.argv
+    argc = len(argvs)
+
+    # オプション
+    print("[Info] argvs: ", argvs)
+    print("[Info] argc: ", argc)
+    if (1 < argc) and (argvs[1] == "--random-post"):
+        random_post()
+    else:
+        show_all()
