@@ -777,6 +777,13 @@ for cx in range(0, 24):
         #elif cx == DFL and cy == BRD:
         #    alg[(cx, cy)].insert(0, ("[R: D', F' U' F]", "1手セットアップ＋D面インターチェンジ"))
 
+        # 2015-05-02 こうさんより
+        # https://twitter.com/ko_obtk/status/594448148954648576
+        elif cx == BRD and cy == BLU:
+            alg[(cx, cy)].insert(0, ("[x: D2, L U2 L']", "持ち替え＋B面(D面)インターチェンジ"))
+        elif cx == BLU and cy == BRD:
+            alg[(cx, cy)].insert(0, ("[x: L U2 L', D2]", "持ち替え＋B面(D面)インターチェンジ"))
+
 
         if len(alg[(cx, cy)]) == 0:
             alg[(cx, cy)].append(("T", "<TODO>"))
