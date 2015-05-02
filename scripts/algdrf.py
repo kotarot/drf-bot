@@ -817,20 +817,27 @@ def select_random_alg():
         x, y = random.randint(0, 23), random.randint(0, 23)
         a = alg[(x, y)][0]
         if a[0][0] != "X":
-            cycle = "DRF->%s->%s" % (cornerss[x], cornerss[y])
+            cycle = (cornerss[x], cornerss[y])
             return (cycle, a[0], a[1])
 
 
 def random_post():
+    path_to_drfbot = os.environ.get("PATH_TO_DRFBOT")
+
     ra = select_random_alg()
-    status = "%s:\n%s (%s)\n\n(´-`).｡oO( もっといい手順あれば教えて!! ) #今日のDRFbuffer" % (ra[0], ra[1], ra[2])
-    print(status)
+    status = "DRF->%s->%s:\n%s (%s)\n\n(´-`).｡oO( もっといい手順あれば教えて!! ) #今日のDRFbuffer" % (ra[0][0], ra[0][1], ra[1], ra[2])
+    imgfilename = "%s/cubeimages/DRF_%s_%s.png" % (path_to_drfbot, ra[0][0], ra[0][1])
+    print("[Info] status: ", status)
+    print("[Info] imgfilename: ", imgfilename)
+
+    with open(imgfilename, "rb") as imagefile:
+        params = {"media[]": imagefile.read(), "status": status}
 
     # Twitter OAuth 認証 + REST
     auth = OAuth(ACCESS_TOKEN, ACCESS_TOKEN_SECRET, CONSUMER_KEY, CONSUMER_SECRET)
     t = Twitter(auth=auth)
     try:
-        t.statuses.update(status=status)
+        t.statuses.update_with_media(**params)
     except TwitterError as e:
         print("[Exception] TwitterError!")
         print(e)
