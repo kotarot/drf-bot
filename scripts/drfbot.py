@@ -235,7 +235,7 @@ if __name__ == '__main__':
             elif ("賢い" in msg["text"] or "かしこい" in msg["text"]):
                 reply_text = "まあね ˉ̞̭ ( ›◡ु‹ ) ˄̻ ̊"
             elif ("すごい" in msg["text"]):
-                reply_text = "知ってた ̊"
+                reply_text = "知ってた"
             elif ("おい" in msg["text"] or "ねえ" in msg["text"] or "あのさ" in msg["text"]):
                 reply_text = "はいっ w|;ﾟﾛﾟ|w ...何でしょうか？"
 
