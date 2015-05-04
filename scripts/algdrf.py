@@ -643,9 +643,9 @@ for cx in range(0, 24):
                 res = pattern_interchange_b(ncx, ncy, premove)
                 if res[0] != "":
                     if res[2] <= 3:
-                        with_setups_high.insert(0, (res[0], res[1]))
+                        with_setups_high.insert(0, (res[0], res[1], 2 + res[2]))
                     else:
-                        with_setups_low.insert(0, (res[0], res[1]))
+                        with_setups_low.insert(0, (res[0], res[1], 2 + res[2]))
 
         # L面インターチェンジ
         res_l = pattern_interchange_l(cx, cy, "")
@@ -659,14 +659,14 @@ for cx in range(0, 24):
                 res = pattern_interchange_l(ncx, ncy, premove)
                 if res[0] != "":
                     if res[2] <= 3:
-                        with_setups_high.insert(0, (res[0], res[1]))
+                        with_setups_high.insert(0, (res[0], res[1], 2 + res[2]))
                     else:
-                        with_setups_low.insert(0, (res[0], res[1]))
+                        with_setups_low.insert(0, (res[0], res[1], 2 + res[2]))
 
         # U面インターチェンジ
         res_u = pattern_interchange_u(cx, cy, "")
         if res_u[0] != "":
-            without_setups_high.append((res_u[0], res_u[1]))
+            without_setups_high.append(res_u)
 
         # 1手セットアップ＋U面インターチェンジ
         else:
@@ -675,14 +675,14 @@ for cx in range(0, 24):
                 res = pattern_interchange_u(ncx, ncy, premove)
                 if res[0] != "":
                     if res[2] <= 3:
-                        with_setups_high.insert(0, (res[0], res[1]))
+                        with_setups_high.insert(0, (res[0], res[1], 2 + res[2]))
                     else:
-                        with_setups_low.insert(0, (res[0], res[1]))
+                        with_setups_low.insert(0, (res[0], res[1], 2 + res[2]))
 
         # D面インターチェンジ
         res_d = pattern_interchange_d(cx, cy, "")
         if res_d[0] != "":
-            without_setups_high.append((res_d[0], res_d[1]))
+            without_setups_high.append(res_d)
 
         # 1手セットアップ＋D面インターチェンジ
         else:
@@ -691,9 +691,9 @@ for cx in range(0, 24):
                 res = pattern_interchange_d(ncx, ncy, premove)
                 if res[0] != "":
                     if res[2] <= 3:
-                        with_setups_high.insert(0, (res[0], res[1]))
+                        with_setups_high.insert(0, (res[0], res[1], 2 + res[2]))
                     else:
-                        with_setups_low.insert(0, (res[0], res[1]))
+                        with_setups_low.insert(0, (res[0], res[1], 2 + res[2]))
 
         alg[(cx, cy)] = without_setups_high + without_setups_low + with_setups_high + with_setups_low
 
@@ -709,7 +709,11 @@ for cx in range(0, 24):
                 (ncx, ncy) = movepos(cx, cy, premove)
                 res = pattern_aperm(ncx, ncy, premove)
                 if res[0] != "":
-                    alg[(cx, cy)].insert(0, res)
+                    # A-permの優先度をちょっと下げる
+                    if len(alg[(cx, cy)]) == 0 or 5 < alg[(cx, cy)][0][2]:
+                        alg[(cx, cy)].insert(0, res)
+                    else:
+                        alg[(cx, cy)].append(res)
 
 
         ################################
