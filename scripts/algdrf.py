@@ -788,6 +788,13 @@ for cx in range(0, 24):
         elif cx == BLU and cy == BRD:
             alg[(cx, cy)].insert(0, ("[x: L U2 L', D2]", "持ち替え＋B面(D面)インターチェンジ"))
 
+        # 2015-05-05 Takeyより
+        # https://twitter.com/Takey_cube/status/595538299231424512
+        elif cx == FRU and cy == LBD:
+            alg[(cx, cy)].insert(0, ("[R, U L2 U']", "R列インターチェンジ"))
+        elif cx == LBD and cy == FRU:
+            alg[(cx, cy)].insert(0, ("[U L2 U', R]", "R列インターチェンジ"))
+
 
         if len(alg[(cx, cy)]) == 0:
             alg[(cx, cy)].append(("T", "<TODO>"))
