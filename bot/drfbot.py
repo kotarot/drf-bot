@@ -162,11 +162,11 @@ if __name__ == '__main__':
     # オプション
     print("[Info] argvs: ", argvs)
     print("[Info] argc: ", argc)
-    if (1 < argc) and (argvs[1] == "--silent"):
-        mode_silent = True
+    if (1 < argc) and (argvs[1] == "--test"):
+        mode_test = True
     else:
-        mode_silent = False
-    print("[Info] mode_silent: ", mode_silent)
+        mode_test = False
+    print("[Info] mode_test: ", mode_test)
 
     # Twitter OAuth 認証
     auth = OAuth(ACCESS_TOKEN, ACCESS_TOKEN_SECRET, CONSUMER_KEY, CONSUMER_SECRET)
@@ -175,7 +175,7 @@ if __name__ == '__main__':
     t = Twitter(auth=auth)
 
     # 再起動つぶやく
-    if not mode_silent:
+    if not mode_test:
         start_time = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
         status = "起床なう (σω-)。о゜" + start_time + " #DRFbot"
         t.direct_messages.new(user="kotarotrd", text=status)
@@ -216,7 +216,7 @@ if __name__ == '__main__':
             tokens_size = len(tokens)
 
             # (Pattern 0) 再起動
-            if (not mode_silent) and (screen_name == "kotarotrd") and ("寝ろ" in msg["text"]):
+            if (not mode_test) and (screen_name == "kotarotrd") and ("寝ろ" in msg["text"]):
                 now_time = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
                 status = "ｵﾌﾄｩﾝ…ｵﾌﾄｩﾝ…ｵﾌt( ˘ω˘)ｽﾔｧ " + now_time + " #DRFbot"
                 try:
@@ -302,7 +302,7 @@ if __name__ == '__main__':
                 status = "@" + screen_name + " " + reply_text
                 print("status: ", status)
                 print("in_reply_to_status_id: ", str(id))
-                if not mode_silent:
+                if not mode_test:
                     try:
                         t.statuses.update(status=status, in_reply_to_status_id=id)
                     except TwitterError as e:
