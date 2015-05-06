@@ -2,6 +2,6 @@
 
 cd ${PATH_TO_DRFBOT}
 
-/usr/local/bin/python3 scripts/algdrf.py --random-post
+/usr/local/bin/python3 bot/algdrf.py --random-post
 
 cd -
