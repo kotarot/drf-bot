@@ -40,7 +40,7 @@ repatter_edge   = re.compile(r'[UFRLBD]{2}')
 #repatter_digits = re.compile(r'[0-9]+')
 # タイムっぽい
 repatter_time_fast = re.compile(r'[1-2]?[0-9]\.[0-9]+')
-repatter_time_mama = re.compile(r'[3-5][0-9]:[0-9]+')
+repatter_time_mama = re.compile(r'[3-5][0-9]\.[0-9]+')
 repatter_time_slow = re.compile(r'[1-9][0-9]*:[0-9]+\.[0-9]+')
 repatter_time_zako = re.compile(r'DNF|dnf')
 
