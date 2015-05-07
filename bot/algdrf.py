@@ -891,6 +891,11 @@ def random_post():
         print(e)
 
 
+# 手順一覧のHTMLを生成する
+def gen_html():
+    print("test")
+
+
 # 単体実行では標準出力に表示
 # "--random-post" オプションでランダム投稿
 if __name__ == '__main__':
@@ -902,5 +907,7 @@ if __name__ == '__main__':
     print("[Info] argc: ", argc)
     if (1 < argc) and (argvs[1] == "--random-post"):
         random_post()
+    elif (1 < argc) and (argvs[2] == "--gen-html")
+        gen_html()
     else:
         show_all()
