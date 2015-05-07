@@ -795,6 +795,25 @@ for cx in range(0, 24):
         elif cx == LBD and cy == FRU:
             alg[(cx, cy)].insert(0, ("[U L2 U', R]", "R列インターチェンジ"))
 
+        # 2015-05-06 こだまくんより
+        # https://twitter.com/DRFbot/status/595970864782409729
+        elif cx == LDF and cy == RDB:
+            alg[(cx, cy)].insert(0, ("[z': R U R2 U' R', F']", "持ち替え＋F列インターチェンジ"))
+        elif cx == RDB and cy == LDF:
+            alg[(cx, cy)].insert(0, ("[z': F', R U R2 U' R']", "持ち替え＋F列インターチェンジ"))
+
+        # 2015-05-07 みさわより
+        # [R' U R: R U' R', D2]
+        # https://twitter.com/msw_goham/status/596239496594624512
+        # 2015-05-07 Takeyより
+        # [R' F R F' R U' R', D2] or [U: R U2 R' U' R U R', D2]
+        # https://twitter.com/Takey_cube/status/596328748141543425
+        # https://twitter.com/Takey_cube/status/596329122298605568
+        elif cx == DLB and cy == URB:
+            alg[(cx, cy)].insert(0, ("[U: R2 U R2 U' R2, D2]", "1手セットアップ＋D面インターチェンジ"))
+        elif cx == URB and cy == DLB:
+            alg[(cx, cy)].insert(0, ("[U: D2, R2 U R2 U' R2]", "1手セットアップ＋D面インターチェンジ"))
+
 
         if len(alg[(cx, cy)]) == 0:
             alg[(cx, cy)].append(("T", "<TODO>"))
