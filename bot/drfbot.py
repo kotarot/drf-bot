@@ -260,7 +260,7 @@ if __name__ == '__main__':
             # タイムぽいのに反応
             if 0 < tokens_size:
                 if repatter_time_fast.match(tokens[0]):
-                    reply_text = "早いね"
+                    reply_text = "速いね"
                 elif repatter_time_mama.match(tokens[0]):
                     reply_text = "まあまあだね"
                 elif repatter_time_slow.match(tokens[0]):
