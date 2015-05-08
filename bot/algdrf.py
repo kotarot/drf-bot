@@ -822,6 +822,13 @@ for cx in range(0, 24):
         elif cx == FLD and cy == RDB:
             alg[(cx, cy)].insert(0, ("[R: D, R2 U R2 U' R2]", "1手セットアップ＋D面インターチェンジ"))
 
+        # 2015-05-08 こだまくんより
+        # https://twitter.com/ceylon_cube/status/596601667681824768
+        elif cx == DFL and cy == BRD:
+            alg[(cx, cy)].insert(0, ("[x: R, U L U']", "持ち替え＋R列インターチェンジ"))
+        elif cx == BRD and cy == DFL:
+            alg[(cx, cy)].insert(0, ("[x: U L U', R]", "持ち替え＋R列インターチェンジ"))
+
 
         if len(alg[(cx, cy)]) == 0:
             alg[(cx, cy)].append(("T", "<TODO>"))
