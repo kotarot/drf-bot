@@ -95,7 +95,7 @@ def split_into_edge_tokens(tokens):
 # コーナー文字の修正 (URF -> UFR 等)
 def correctify_corners(tokens):
     corrects = {
-        "URF": "UFR", "UFL": "ULF", "ULB": "UBL", "UBR": "UBR",
+        "URF": "UFR", "UFL": "ULF", "ULB": "UBL", "UBR": "URB",
         "FRD": "FDR", "FDL": "FLD", "FLU": "FUL", "FUR": "FRU",
         "LFD": "LDF", "LDB": "LBD", "LBU": "LUB", "LUF": "LFU",
         "BLD": "BDL", "BDR": "BRD", "BRU": "BUR", "BUL": "BLU",
@@ -126,17 +126,17 @@ def search_drf(tokens):
 
     # 形式が間違っている
     if (length < 2):
-        return ""
+        return {"cycle": None, "text": ""}
 
     cycle = "DRF->" + tokens[0] + "->" + tokens[1]
     cyclekey = (tokens[0], tokens[1])
     if cyclekey in DRFbuffer:
         if DRFbuffer[cyclekey][0] == "X":
-            return cycle + " は3-cycleじゃないよ... ٩(๑`ȏ´๑)۶"
+            return {"cycle": None, "text": cycle + " は3-cycleじゃないよ... ٩(๑`ȏ´๑)۶"}
         else:
-            return cycle + " は " + DRFbuffer[cyclekey][0] + " (" +  DRFbuffer[cyclekey][1] + ") だよ (๑˃̵ᴗ˂̵)و"
+            return {"cycle": (tokens[0], tokens[1]), "text": cycle + " は " + DRFbuffer[cyclekey][0] + " (" +  DRFbuffer[cyclekey][1] + ") だよ (๑˃̵ᴗ˂̵)و"}
     else:
-        return cycle + " はちょっとまだ準備できてないよ... ٩(๑`ȏ´๑)۶"
+        return {"cycle": None, "text": cycle + " はちょっとまだ準備できてないよ... ٩(๑`ȏ´๑)۶"}
 
 
 # DFバッファのエッジ3-cycle手順検索
@@ -150,9 +150,9 @@ def search_df(tokens):
 
     # 形式が間違っている
     if (length < 2):
-        return ""
+        return {"cycle": None, "text": ""}
 
-    return "エッジの3-cycleはちょっとまだ準備できてないよ... ٩(๑`ȏ´๑)۶"
+    return {"cycle": (tokens[0], tokens[1]), "text": "エッジの3-cycleはちょっとまだ準備できてないよ... ٩(๑`ȏ´๑)۶"}
 
 
 if __name__ == '__main__':
@@ -208,8 +208,9 @@ if __name__ == '__main__':
             user_name = msg["user"]["name"]
             print("[Info] Mentioned from @" + screen_name + " (id=" + str(id)+ ")")
 
-            # 返信用テキスト
+            # 返信用テキスト/画像
             reply_text = ""
+            reply_imgfilename = ""
 
             # トークンへ分割する
             tokens = split_into_tokens(msg["text"])
@@ -280,14 +281,19 @@ if __name__ == '__main__':
                 # コーナートークンへの分割
                 corners = split_into_corner_tokens(tokens)
                 # DRFバッファのコーナー3-cycle手順検索
-                reply_text = search_drf(corners)
+                algorithm = search_drf(corners)
+                reply_text = algorithm["text"]
+                if algorithm["cycle"] is not None:
+                    reply_imgfilename = "%s/cubeimages/DRF_%s_%s.png" % (os.environ.get("PATH_TO_DRFBOT"), algorithm["cycle"][0], algorithm["cycle"][1])
+                    print("imgfilename: ", reply_imgfilename)
 
             # (Pattern B) DFバッファのエッジ3-cycle
             if reply_text == "":
                 # エッジトークンへの分割
                 edges = split_into_edge_tokens(tokens)
                 # DFバッファのエッジ3-cycle手順検索
-                reply_text = search_df(edges)
+                algorithm = search_df(edges)
+                reply_text = algorithm["text"]
 
             # (Pattern C) 世界/日本記録
             if reply_text == "" and 1 < tokens_size:
@@ -300,11 +306,23 @@ if __name__ == '__main__':
             # 文字列生成してリプライ
             if reply_text != "" and str(id) != "":
                 status = "@" + screen_name + " " + reply_text
-                print("status: ", status)
-                print("in_reply_to_status_id: ", str(id))
+                if reply_imgfilename == "":
+                    print("[Info] About to reply")
+                    params = {"status": status, "in_reply_to_status_id": str(id)}
+                else:
+                    print("[Info] About to reply *WITH MEDIA*")
+                    with open(reply_imgfilename, "rb") as imagefile:
+                        params = {"media[]": imagefile.read(), "status": status, "in_reply_to_status_id": str(id)}
+
+                print("status: ", params["status"])
+                print("in_reply_to_status_id: ", params["in_reply_to_status_id"])
+
                 if not mode_test:
                     try:
-                        t.statuses.update(status=status, in_reply_to_status_id=id)
+                        if "media[]" not in params:
+                            t.statuses.update(**params)
+                        else:
+                            t.statuses.update_with_media(**params)
                     except TwitterError as e:
                         print("[Exception] TwitterError!")
                         print(e)
