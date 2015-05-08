@@ -95,7 +95,7 @@ def split_into_edge_tokens(tokens):
 # コーナー文字の修正 (URF -> UFR 等)
 def correctify_corners(tokens):
     corrects = {
-        "URF": "UFR", "UFL": "ULF", "ULB": "UBL", "UBR": "UBR",
+        "URF": "UFR", "UFL": "ULF", "ULB": "UBL", "UBR": "URB",
         "FRD": "FDR", "FDL": "FLD", "FLU": "FUL", "FUR": "FRU",
         "LFD": "LDF", "LDB": "LBD", "LBU": "LUB", "LUF": "LFU",
         "BLD": "BDL", "BDR": "BRD", "BRU": "BUR", "BUL": "BLU",
