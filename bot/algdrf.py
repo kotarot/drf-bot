@@ -21,22 +21,6 @@ ACCESS_TOKEN        = os.environ.get("DRFBOT_ACCESS_TOKEN")
 ACCESS_TOKEN_SECRET = os.environ.get("DRFBOT_ACCESS_TOKEN_SECRET")
 
 
-#def reverse_one(str):
-#    if (len(str) == 1):
-#        return str + "'"
-#    elif (str[1] == "2"):
-#        return str
-#    else:
-#        return str[0]
-
-#def reverse(str):
-#    ret = []
-#    alg = str.split(' ');
-#    for a in alg.reverse():
-#        ret.append(reverse_one(a))
-#    return ' '.join(ret)
-
-
 ################################
 #### CONSTANTS #################
 ################################
@@ -82,12 +66,6 @@ cornerss = ['UFR', 'ULF', 'UBL', 'URB',
 premoves = ["U", "U2", "U'",
             "L", "L2", "L'",
             "B", "B2", "B'"]
-#premoves = ["U", "U2", "U'",
-#            "F", "F2", "F'",
-#            "L", "L2", "L'",
-#            "B", "B2", "B'",
-#            "R", "R2", "R'",
-#            "D", "D2", "D'"]
 ################################
 
 

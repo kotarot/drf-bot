@@ -179,14 +179,6 @@ if __name__ == '__main__':
         start_time = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
         status = "起床なう (σω-)。о゜" + start_time + " #DRFbot"
         t.direct_messages.new(user="kotarotrd", text=status)
-    #    try:
-    #        t.statuses.update(status=status)
-    #    except TwitterError as e:
-    #        print("[Exception] TwitterError!")
-    #        print(e)
-    #    except TwitterHTTPError as e:
-    #        print("[Exception] TwitterHTTPError!")
-    #        print(e)
 
     # User streams
     twitter_stream = TwitterStream(auth=auth, domain="userstream.twitter.com")
