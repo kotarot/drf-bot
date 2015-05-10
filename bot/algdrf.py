@@ -885,6 +885,7 @@ def gen_html(filename):
     <title>@DRFbot の コーナー3-cycle (DRFバッファ) 手順一覧</title>
     <meta name="description" content="Buffer is DRF!! @DRFbot の コーナー3-cycle (DRFバッファ) 手順一覧">
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
     <style>
       body {
         padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
@@ -911,8 +912,8 @@ def gen_html(filename):
         <div id="navbar" class="collapse navbar-collapse">
           <ul class="nav navbar-nav">
             <li class="active"><a href="#">Home</a></li>
-            <li><a href="https://twitter.com/DRFbot">@DRFbot</a></li>
-            <li><a href="https://github.com/kotarot/drf-bot">Fork me on GitHub</a></li>
+            <li><a href="https://twitter.com/DRFbot"><i class="fa fa-twitter fa-lg"></i> @DRFbot</a></li>
+            <li><a href="https://github.com/kotarot/drf-bot"><i class="fa fa-github fa-lg"></i> Fork me on GitHub</a></li>
           </ul>
         </div><!--/.nav-collapse -->
       </div>
