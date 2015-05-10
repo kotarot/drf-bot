@@ -889,6 +889,9 @@ def gen_html(filename):
       body {
         padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
       }
+      .first {
+        border-top: 2px solid #DDD;
+      }
     </style>
   </head>
 
@@ -945,10 +948,15 @@ def gen_html(filename):
 
     rows = []
     for x in range(0, 24):
+        first = True
         for y in range(0, 24):
             a = alg[(x, y)][0]
             if a[0][0] != "X":
-                rows.append("<tr><td>(DRF %s %s)</td><td>%s</td><td>%s</td></tr>" % (cornerss[x], cornerss[y], a[0], a[1]))
+                if first:
+                    first = False
+                    rows.append("<tr class=\"first\"><td>(DRF %s %s)</td><td>%s</td><td>%s</td></tr>" % (cornerss[x], cornerss[y], a[0], a[1]))
+                else:
+                    rows.append("<tr><td>(DRF %s %s)</td><td>%s</td><td>%s</td></tr>" % (cornerss[x], cornerss[y], a[0], a[1]))
 
     f = open(filename, "w")
     f.write(html % ("\n          ".join(rows)))
