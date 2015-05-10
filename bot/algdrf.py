@@ -875,7 +875,7 @@ def random_post():
 
 
 # 手順一覧のHTMLを生成する
-def gen_html():
+def gen_html(filename):
     html = """<!DOCTYPE html>
 <html lang="ja">
   <head>
@@ -950,9 +950,7 @@ def gen_html():
             if a[0][0] != "X":
                 table = table + "<tr><td>(DRF %s %s)</td><td>%s</td><td>%s</td></tr>" % (cornerss[x], cornerss[y], a[0], a[1])
 
-    htmlfilename = "%s/index.html" % (os.environ.get("PATH_TO_DRFBOT"))
-    print("htmlfilename: ", htmlfilename)
-    f = open(htmlfilename, "w")
+    f = open(filename, "w")
     f.write(html % (table))
     f.close()
 
@@ -969,6 +967,10 @@ if __name__ == '__main__':
     if (1 < argc) and (argvs[1] == "--random-post"):
         random_post()
     elif (1 < argc) and (argvs[1] == "--gen-html"):
-        gen_html()
+        if argc < 3:
+            print("[Error] HTML filename is required.")
+        else:
+            print("[Info] filename: ", argvs[2])
+            gen_html(argvs[2])
     else:
         show_all()
