@@ -943,15 +943,15 @@ def gen_html(filename):
   </body>
 </html>"""
 
-    table = ""
+    rows = []
     for x in range(0, 24):
         for y in range(0, 24):
             a = alg[(x, y)][0]
             if a[0][0] != "X":
-                table = table + "<tr><td>(DRF %s %s)</td><td>%s</td><td>%s</td></tr>" % (cornerss[x], cornerss[y], a[0], a[1])
+                rows.append("<tr><td>(DRF %s %s)</td><td>%s</td><td>%s</td></tr>" % (cornerss[x], cornerss[y], a[0], a[1]))
 
     f = open(filename, "w")
-    f.write(html % (table))
+    f.write(html % ("\n          ".join(rows)))
     f.close()
 
 
