@@ -929,7 +929,7 @@ def gen_html(filename):
       <h3>コーナー3-cycle手順一覧</h3>
       <p>現在のコーナー3-cycle (DRFバッファ) 手順一覧です。もっと良い手順を知ってたり思いついたらリプライで知らせてください。</p>
 
-      <table class="table table-condensed">
+      <table class="table table-condensed table-striped">
         <thead>
           <tr><th>Cycle</th><th>手順</th><th>分類</th></tr>
         </thead>
