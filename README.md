@@ -4,6 +4,12 @@ DRFbot
 [@DRFbot](https://twitter.com/DRFbot) is my dear bot on Twitter.
 
 
+List of algorithms
+------------------
+
+You can view the [list of all algorithms](https://kotarot.github.io/drf-bot/) that the bot has learned.
+
+
 How to revive it
 ----------------
 
