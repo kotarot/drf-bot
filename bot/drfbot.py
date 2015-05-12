@@ -224,6 +224,10 @@ if __name__ == '__main__':
         print("[Info] Timeline updated!")
         print(msg)
 
+        if "user" in msg:
+            screen_name = msg["user"]["screen_name"]
+            user_name = msg["user"]["name"]
+
         # @メンション の対応
         is_mention = False
         if ("id" in msg) and ("entities" in msg) and ("user_mentions" in msg["entities"]):
@@ -234,8 +238,6 @@ if __name__ == '__main__':
 
         if is_mention:
             id = msg["id"]
-            screen_name = msg["user"]["screen_name"]
-            user_name = msg["user"]["name"]
             print("[Info] Mentioned from @" + screen_name + " (id=" + str(id)+ ")")
 
             # 返信用テキスト/画像
