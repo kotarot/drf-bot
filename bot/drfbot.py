@@ -7,9 +7,11 @@ Bot本体
 """
 
 from datetime import datetime
+import csv
 import re
 import sys
 import os
+import random
 
 # Python Twitter Tools
 # https://github.com/sixohsix/twitter
@@ -52,6 +54,11 @@ repatter_time_zako = re.compile(r'DNF|dnf')
 # DRFバッファのコーナー3-cycle手順の辞書
 # 辞書はタプルをキーにして手順を文字列として持つ
 DRFbuffer = algdrf.get()
+
+# リプライの辞書/リスト
+replies = {}
+random_replies = []
+
 
 # トークンへ分割する
 # トークンとはスペースとかハイフンとかで区切られたかたまり
@@ -160,6 +167,19 @@ def search_df(tokens):
     return {"cycle": (tokens[0], tokens[1]), "text": "エッジの3-cycleはちょっとまだ準備できてないよ... ٩(๑`ȏ´๑)۶"}
 
 
+# リプライテキスト
+def get_reply_text(text):
+    for k, v in replies.items():
+        if k in text:
+            return v
+    return ""
+
+
+# ランダムリプライテキスト
+def get_random_reply_text():
+    return random.choice(random_replies)
+
+
 if __name__ == '__main__':
     argvs = sys.argv
     argc = len(argvs)
@@ -172,6 +192,19 @@ if __name__ == '__main__':
     else:
         mode_test = False
     print("[Info] mode_test: ", mode_test)
+
+    # CSV読み込み (リプライ)
+    with open(os.environ.get("PATH_TO_DRFBOT") + "/csv/replies.csv", "r") as f:
+        reader = csv.reader(f)
+        header = next(reader)
+        for line in reader:
+            if line[1] == "":
+                random_replies.append(line[2])
+            else:
+                replies[line[1]] = line[2]
+
+    print("random_replies: ", random_replies)
+    print("replies: ", replies)
 
     # Twitter OAuth 認証
     auth = OAuth(ACCESS_TOKEN, ACCESS_TOKEN_SECRET, CONSUMER_KEY, CONSUMER_SECRET)
@@ -227,40 +260,16 @@ if __name__ == '__main__':
                     print(e)
                 sys.exit(0)
 
-            # (Pattern 1) スペシャルケース 1 いろいろ
-            elif ("有能" in msg["text"]):
-                reply_text = "えへへ (ﾉ≧ڡ≦)"
-            elif ("賢い" in msg["text"] or "かしこい" in msg["text"]):
-                reply_text = "まあね ˉ̞̭ ( ›◡ु‹ ) ˄̻ ̊"
-            elif ("すごい" in msg["text"]):
-                reply_text = "知ってた"
-            elif ("おい" in msg["text"] or "ねえ" in msg["text"] or "あのさ" in msg["text"]):
-                reply_text = "はいっ w|;ﾟﾛﾟ|w ...何でしょうか？"
+            # CSVパターンマッチング
+            reply_text = get_reply_text(msg["text"])
 
-            # (Pattern 2) スペシャルケース 2 : HuaLong
-            elif ("HuaLong" in msg["text"] or "hualong" in msg["text"]):
-                reply_text = "HuaLongは神"
-
-            # (Pattern 4) スペシャルケース 4 : 世界大会
-            elif ("世界大会" in msg["text"]):
-                reply_text = user_name + "はルービックキューブ世界大会に行きまぁす"
-
-            # (Pattern 5) スペシャルケース 5 : 数字
+            # 数字ぽいのに反応
             #elif repatter_digits.search(msg["text"]):
             #    d = int(repatter_digits.search(msg["text"]).group(0))
             #    if prime.is_prime(d):
             #        reply_text = screen_name + " " + str(d) + " は素数だよ"
             #    else:
             #        reply_text = screen_name + " " + str(d) + " は素数じゃないよ"
-
-            # (Pattern 6) スペシャルケース 6 : 思います
-            elif ("思います" in msg["text"] or "思う" in msg["text"] or "思いました" in msg["text"] or "思った" in msg["text"] or
-                  "では？" in msg["text"] or "どう？" in msg["text"] or "どうですか" in msg["text"] or "どうでしょう" in msg["text"]):
-                reply_text = "なるほど～♬"
-
-            # (Pattern 7) スペシャルケース 7 : せやな
-            elif ("せやな" in msg["text"] or "せやね" in msg["text"]):
-                reply_text = "せやろか？"
 
             # タイムぽいのに反応
             if 0 < tokens_size:
@@ -298,7 +307,7 @@ if __name__ == '__main__':
 
             # 適当にリプライ
             if reply_text == "":
-                reply_text = "( ᵅั ᴈ ᵅั;)～♬"
+                reply_text = get_random_reply_text()
 
             # 文字列生成してリプライ
             if reply_text != "" and str(id) != "":
