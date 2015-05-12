@@ -30,6 +30,11 @@ ACCESS_TOKEN        = os.environ.get("DRFBOT_ACCESS_TOKEN")
 ACCESS_TOKEN_SECRET = os.environ.get("DRFBOT_ACCESS_TOKEN_SECRET")
 
 
+# Other Configurations
+DRFBOT_SCREEN_NAME = "DRFbot"
+ADMIN_SCREEN_NAME  = "kotarotrd"
+
+
 # トークン分割のパターン
 repatter_token  = re.compile(r'[\s,\->　]')
 # コーナーの文字列パターン
@@ -178,7 +183,7 @@ if __name__ == '__main__':
     if not mode_test:
         start_time = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
         status = "起床なう (σω-)。о゜" + start_time + " #DRFbot"
-        t.direct_messages.new(user="kotarotrd", text=status)
+        t.direct_messages.new(user=ADMIN_SCREEN_NAME, text=status)
 
     # User streams
     twitter_stream = TwitterStream(auth=auth, domain="userstream.twitter.com")
@@ -191,7 +196,7 @@ if __name__ == '__main__':
         if ("id" in msg) and ("entities" in msg) and ("user_mentions" in msg["entities"]):
             user_mentions = msg["entities"]["user_mentions"]
             for user_mention in user_mentions:
-                if user_mention["screen_name"] == "DRFbot":
+                if screen_name != DRFBOT_SCREEN_NAME and user_mention["screen_name"] == DRFBOT_SCREEN_NAME:
                     is_mention = True
 
         if is_mention:
@@ -209,7 +214,7 @@ if __name__ == '__main__':
             tokens_size = len(tokens)
 
             # (Pattern 0) 再起動
-            if (not mode_test) and (screen_name == "kotarotrd") and ("寝ろ" in msg["text"]):
+            if (not mode_test) and (screen_name == ADMIN_SCREEN_NAME) and ("寝ろ" in msg["text"]):
                 now_time = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
                 status = "ｵﾌﾄｩﾝ…ｵﾌﾄｩﾝ…ｵﾌt( ˘ω˘)ｽﾔｧ " + now_time + " #DRFbot"
                 try:
