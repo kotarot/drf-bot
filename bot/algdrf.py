@@ -21,6 +21,10 @@ ACCESS_TOKEN        = os.environ.get("DRFBOT_ACCESS_TOKEN")
 ACCESS_TOKEN_SECRET = os.environ.get("DRFBOT_ACCESS_TOKEN_SECRET")
 
 
+# Other Configurations
+PATH_TO_DRFBOT = "%s/.." % os.path.abspath(os.path.dirname(__file__))
+
+
 ################################
 #### CONSTANTS #################
 ################################
@@ -861,7 +865,7 @@ def select_random_alg():
 def random_post():
     ra = select_random_alg()
     status = "DRF->%s->%s:\n%s (%s)\n\n(´-`).｡oO( もっといい手順あれば教えて!! ) #今日のDRFbuffer" % (ra[0][0], ra[0][1], ra[1], ra[2])
-    imgfilename = "%s/cubeimages/DRF_%s_%s.png" % (os.environ.get("PATH_TO_DRFBOT"), ra[0][0], ra[0][1])
+    imgfilename = "%s/cubeimages/DRF_%s_%s.png" % (PATH_TO_DRFBOT, ra[0][0], ra[0][1])
     print("[Info] status: ", status)
     print("[Info] imgfilename: ", imgfilename)
 

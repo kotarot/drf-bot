@@ -35,6 +35,7 @@ ACCESS_TOKEN_SECRET = os.environ.get("DRFBOT_ACCESS_TOKEN_SECRET")
 # Other Configurations
 DRFBOT_SCREEN_NAME = "DRFbot"
 ADMIN_SCREEN_NAME  = "kotarotrd"
+PATH_TO_DRFBOT = "%s/.." % os.path.abspath(os.path.dirname(__file__))
 
 
 # トークン分割のパターン
@@ -192,7 +193,7 @@ if __name__ == '__main__':
     print("[Info] mode_test: ", mode_test)
 
     # CSV読み込み (リプライ)
-    with open(os.environ.get("PATH_TO_DRFBOT") + "/csv/replies.csv", "r") as f:
+    with open("%s/csv/replies.csv" % PATH_TO_DRFBOT, "r") as f:
         reader = csv.reader(f)
         header = next(reader)
         for line in reader:
@@ -290,7 +291,7 @@ if __name__ == '__main__':
                 algorithm = search_drf(corners)
                 reply_text = algorithm["text"]
                 if algorithm["cycle"] is not None:
-                    reply_imgfilename = "%s/cubeimages/DRF_%s_%s.png" % (os.environ.get("PATH_TO_DRFBOT"), algorithm["cycle"][0], algorithm["cycle"][1])
+                    reply_imgfilename = "%s/cubeimages/DRF_%s_%s.png" % (PATH_TO_DRFBOT, algorithm["cycle"][0], algorithm["cycle"][1])
                     print("imgfilename: ", reply_imgfilename)
 
             # (Pattern B) DFバッファのエッジ3-cycle
