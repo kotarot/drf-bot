@@ -84,8 +84,7 @@ def split_into_corner_tokens(tokens):
     corners = []
     for token in tokens:
         token = token.upper()
-        matched = repatter_corner.match(token)
-        if matched:
+        if repatter_corner.match(token):
             corners.append(matched.group())
     print("corners: ", corners)
     return corners
@@ -97,8 +96,7 @@ def split_into_edge_tokens(tokens):
     edges = []
     for token in tokens:
         token = token.upper()
-        matched = repatter_edge.match(token)
-        if matched:
+        if repatter_edge.match(token):
             edges.append(matched.group())
     print("edges: ", edges)
     return edges
