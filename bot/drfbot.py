@@ -42,11 +42,7 @@ PATH_TO_DRFBOT = "%s/.." % os.path.abspath(os.path.dirname(__file__))
 import logging
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
-
-import datetime
-d = datetime.datetime.today()
-logfilename = "%s%s%s-%s%s%s" % (d.year, d.month, d.day, d.hour, d.minute, d.second)
-
+logfilename = datetime.now().strftime("%Y%m%d-%H%M%S")
 logger.addHandler(logging.FileHandler("%s/logs/%s.log" % (PATH_TO_DRFBOT, logfilename), "a+"))
 logger.info("DRFbot has just started.")
 
