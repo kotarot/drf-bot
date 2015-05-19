@@ -818,6 +818,13 @@ for cx in range(0, 24):
         elif cx == FRU and cy == LFU:
             alg[(cx, cy)].insert(0, ("[x: R, U' L' U]", "持ち替え＋R列インターチェンジ"))
 
+        # 2015-05-19 こうさんより
+        # https://twitter.com/ko_obtk/status/600587552739831808
+        elif cx == FUL and cy == DBR:
+            alg[(cx, cy)].insert(0, ("[R' U2 R, D]", "D面インターチェンジ"))
+        elif cx == DBR and cy == FUL:
+            alg[(cx, cy)].insert(0, ("[D, R' U2 R]", "D面インターチェンジ"))
+
 
         if len(alg[(cx, cy)]) == 0:
             alg[(cx, cy)].append(("T", "<TODO>"))
