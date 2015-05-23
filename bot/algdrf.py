@@ -825,6 +825,13 @@ for cx in range(0, 24):
         elif cx == DBR and cy == FUL:
             alg[(cx, cy)].insert(0, ("[D, R' U2 R]", "D面インターチェンジ"))
 
+        # 2015-05-23追加 Takeyより
+        # https://twitter.com/Takey_cube/status/601675407235031040
+        elif cx == DLB and cy == LDF:
+            alg[(cx, cy)].insert(0, ("[F': D2, R U R']", "1手セットアップ＋D面インターチェンジ"))
+        elif cx == LDF and cy == DLB:
+            alg[(cx, cy)].insert(0, ("[F': R U R', D2]", "1手セットアップ＋D面インターチェンジ"))
+
 
         if len(alg[(cx, cy)]) == 0:
             alg[(cx, cy)].append(("T", "<TODO>"))
