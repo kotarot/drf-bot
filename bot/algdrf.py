@@ -832,6 +832,20 @@ for cx in range(0, 24):
         elif cx == LDF and cy == DLB:
             alg[(cx, cy)].insert(0, ("[F': R U R', D2]", "1手セットアップ＋D面インターチェンジ"))
 
+        # 2015-06-06追加 たくさんより
+        # https://twitter.com/gohamtakanai/status/605298627603365888
+        elif cx == LBD and cy == URB:
+            alg[(cx, cy)].insert(0, ("[L: U' L' U, R2]", "1手セットアップ＋R2法"))
+        elif cx == URB and cy == LBD:
+            alg[(cx, cy)].insert(0, ("[L: R2, U' L' U]", "1手セットアップ＋R2法"))
+
+        # 2015-06-06追加 こだまくんより
+        # https://twitter.com/ceylon_cube/status/605661741968551936
+        elif cx == RUF and cy == UBL:
+            alg[(cx, cy)].insert(0, ("[x': D', R U' R']", "1手セットアップ＋D面インターチェンジ"))
+        elif cx == UBL and cy == RUF:
+            alg[(cx, cy)].insert(0, ("[x': R U' R': D']", "1手セットアップ＋D面インターチェンジ"))
+
 
         if len(alg[(cx, cy)]) == 0:
             alg[(cx, cy)].append(("T", "<TODO>"))
