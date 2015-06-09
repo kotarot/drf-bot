@@ -846,6 +846,13 @@ for cx in range(0, 24):
         elif cx == UBL and cy == RUF:
             alg[(cx, cy)].insert(0, ("[x': R U' R': D']", "1手セットアップ＋D面インターチェンジ"))
 
+        # 2015-06-09追加 こだまくんより
+        # https://twitter.com/ceylon_cube/status/608203436220424192
+        elif cx == LFU and cy == URB:
+            alg[(cx, cy)].insert(0, ("[x': U L' U', R2]", "持ち替え＋R2法"))
+        elif cx == URB and cy == LFU:
+            alg[(cx, cy)].insert(0, ("[x': R2, U L' U']", "持ち替え＋R2法"))
+
 
         if len(alg[(cx, cy)]) == 0:
             alg[(cx, cy)].append(("T", "<TODO>"))
