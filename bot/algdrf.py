@@ -853,6 +853,13 @@ for cx in range(0, 24):
         elif cx == URB and cy == LFU:
             alg[(cx, cy)].insert(0, ("[x': R2, U L' U']", "持ち替え＋R2法"))
 
+        # 2015-06-25追加 こだまくんより
+        # https://twitter.com/ceylon_cube/status/613284001688596480
+        elif cx == RUF and cy == RDB:
+            alg[(cx, cy)].insert(0, ("[x: R2 D' R2 D R2, U]", "持ち替え＋U面インターチェンジ"))
+        elif cx == RDB and cy == RUF:
+            alg[(cx, cy)].insert(0, ("[x: U, R2 D' R2 D R2]", "持ち替え＋U面インターチェンジ"))
+
 
         if len(alg[(cx, cy)]) == 0:
             alg[(cx, cy)].append(("T", "<TODO>"))
