@@ -222,12 +222,6 @@ if __name__ == '__main__':
     # REST
     t = Twitter(auth=auth)
 
-    # 再起動つぶやく
-    if not mode_test:
-        start_time = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
-        status = "起床なう (σω-)。о゜" + start_time + " #DRFbot"
-        t.direct_messages.new(user=ADMIN_SCREEN_NAME, text=status)
-
     # User streams
     twitter_stream = TwitterStream(auth=auth, domain="userstream.twitter.com")
     for msg in twitter_stream.user():
