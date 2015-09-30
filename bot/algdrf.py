@@ -68,6 +68,12 @@ cornerss = ['UFR', 'ULF', 'UBL', 'URB',
             'BDL', 'BRD', 'BUR', 'BLU',
             'RDB', 'RFD', 'RUF', 'RBU',
             'DBR', 'DLB', 'DFL', 'DRF']
+cornersidx = {'UFR':  0, 'ULF':  1, 'UBL':  2, 'URB':  3,
+              'FDR':  4, 'FLD':  5, 'FUL':  6, 'FRU':  7,
+              'LDF':  8, 'LBD':  9, 'LUB': 10, 'LFU': 11,
+              'BDL': 12, 'BRD': 13, 'BUR': 14, 'BLU': 15,
+              'RDB': 16, 'RFD': 17, 'RUF': 18, 'RBU': 19,
+              'DBR': 20, 'DLB': 21, 'DFL': 22, 'DRF': 23}
 
 # セットアップ用プレムーブ (バッファが動くものは除外)
 premoves = ["U", "U2", "U'",
@@ -597,6 +603,18 @@ def pattern_aperm(cx, cy, premove):
 
 ################################
 # 手順生成
+
+# カスタム手順を CSV から読み込んでおく
+alg_custom = {}
+with open('%s/csv/customs.csv' % PATH_TO_DRFBOT, 'r') as f:
+    reader = csv.reader(f)
+    header = next(reader)
+    for line in reader:
+        cxs, cys = line[0], line[1]
+        algorithm, description = line[2], line[3]
+        alg_custom[(cornersidx[cxs], cornersidx[cys])].insert(0, (algorithm, description))
+print(alg_custom)
+
 alg = {}
 for cx in range(0, 24):
     for cy in range(0, 24):
@@ -700,13 +718,7 @@ for cx in range(0, 24):
                     else:
                         alg[(cx, cy)].append(res)
 
-        # 個別対応
-        # カスタム手順として CSV から読み込み
-        with open('%s/csv/customs.csv' % PATH_TO_DRFBOT, 'r') as f:
-            reader = csv.reader(f)
-            header = next(reader)
-            for line in reader:
-                print(line)
+        # 個別対応 カスタム手順はCSVから
 
         ################################
         #### 個別対応
