@@ -51,3 +51,5 @@ valid,X,Y,algorithm,description,comment
 1,ULF,LUB,"[z: F2, R U R2 U' R']","持ち替え＋F面インターチェンジ","上の逆手順"
 1,FRU,UBL,"[x: R, U' L U]","持ち替え＋R面インターチェンジ","2015-10-01追加 ゆう https://twitter.com/Yuu_999/status/649242227701448705 他に [D' L2 D, R'] みさわ https://twitter.com/transcend_msw/status/649242815277350912"
 1,UBL,FRU,"[x: U' L U, R]","持ち替え＋R面インターチェンジ","上の逆手順"
+1,FRU,LUB,"[R; R, U' L' U]","1手セットアップ＋R列インターチェンジ","2015-10-01追加 ゆう https://twitter.com/Yuu_999/status/649250172329963521"
+1,LUB,FRU,"[R; U' L' U, R]","1手セットアップ＋R列インターチェンジ","上の逆手順"
