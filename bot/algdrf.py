@@ -610,12 +610,13 @@ with open('%s/csv/customs.csv' % PATH_TO_DRFBOT, 'r') as f:
     reader = csv.reader(f)
     header = next(reader)
     for line in reader:
-        k = (line[0], line[1]) # key: (cx, cy)
-        v = (line[2], line[3]) # value: (algorithm, description)
-        if k not in alg_custom:
-            alg_custom[k] = [v]
-        else:
-            alg_custom[k].insert(0, v)
+        if line[0] == '1':
+            k = (line[1], line[2]) # key: (cx, cy)
+            v = (line[3], line[4]) # value: (algorithm, description)
+            if k not in alg_custom:
+                alg_custom[k] = [v]
+            else:
+                alg_custom[k].insert(0, v)
 print(alg_custom)
 
 alg = {}
@@ -721,170 +722,9 @@ for cx in range(0, 24):
                     else:
                         alg[(cx, cy)].append(res)
 
-        # 個別対応 カスタム手順はCSVから
-
-        ################################
-        #### 個別対応
-
-        # R2/L2パターン (持ち替えなし)
-        if cx == DFL and cy == URB:
-            alg[(cx, cy)].insert(0, ("[U' L2 U, R2]", "R2法"))
-        elif cx == URB and cy == DFL:
-            alg[(cx, cy)].insert(0, ("[R2, U' L2 U]", "R2法"))
-        elif cx == DFL and cy == UBL:
-            alg[(cx, cy)].insert(0, ("[L2, U R2 U']", "L2法"))
-        elif cx == UBL and cy == DFL:
-            alg[(cx, cy)].insert(0, ("[U R2 U', L2]", "L2法"))
-
-        # R2/L2パターン (持ち替えあり)
-        elif cx == DBR and cy == UBL:
-            alg[(cx, cy)].insert(0, ("[y: R2, U' L2 U]", "R2法"))
-        elif cx == UBL and cy == DBR:
-            alg[(cx, cy)].insert(0, ("[y: U' L2 U, R2]", "R2法"))
-        elif cx == DBR and cy == ULF:
-            alg[(cx, cy)].insert(0, ("[y: U R2 U', L2]", "L2法"))
-        elif cx == ULF and cy == DBR:
-            alg[(cx, cy)].insert(0, ("[y: L2, U R2 U']", "L2法"))
-
-        # R面インターチェンジ
-        # ちなみにこの2パターン (「すな」と「なす」) は他の方法では無理
-        elif cx == LDF and cy == BRD:
-            alg[(cx, cy)].insert(0, ("[R, D' L' D]", "R面インターチェンジ"))
-        elif cx == BRD and cy == LDF:
-            alg[(cx, cy)].insert(0, ("[D' L' D, R]", "R面インターチェンジ"))
-
-        # サイクリックシフト TODO: 他にも適用
-        # 2015-04-28 たくくんさんより
-        # https://twitter.com/gohamtakanai/status/593033973820891137
-        elif cx == FLD and cy == LFU:
-            alg[(cx, cy)].insert(0, ("R U' F2 U R' U' R F2 R' U", "サイクリックシフト"))
-        elif cx == LFU and cy == FLD:
-            alg[(cx, cy)].insert(0, ("U' R F2 R' U R U' F2 U R'", "サイクリックシフト"))
-
-        # 2015-04-28 うえしゅうより
-        # https://twitter.com/uesyuu_tkb/status/593051080646234114
-        elif cx == UFR and cy == RBU:
-            alg[(cx, cy)].insert(0, ("[D': F2, R U R2 U' R']", "1手セットアップ＋F面インターチェンジ"))
-        elif cx == RBU and cy == UFR:
-            alg[(cx, cy)].insert(0, ("[D': R U R2 U' R', F2]", "1手セットアップ＋F面インターチェンジ"))
-
-        # 2015-04-29 たくくんさんより
-        # https://twitter.com/gohamtakanai/status/593205722856300545
-        # https://twitter.com/bot_ulb/status/593207422656712704
-        elif cx == BLU and cy == URB:
-            alg[(cx, cy)].insert(0, ("[D': R'; U2, R' D R]", "セットアップ＋A9"))
-        elif cx == URB and cy == BLU:
-            alg[(cx, cy)].insert(0, ("[D': R'; R' D R, U2]", "セットアップ＋A9"))
-
-        # 2015-04-30 こだまくんより
-        # https://twitter.com/ceylon_cube/status/593428663674081280
-        elif cx == BRD and cy == DLB:
-            alg[(cx, cy)].insert(0, ("[R: F' U' F, D2]", "1手セットアップ＋D面インターチェンジ"))
-        elif cx == DLB and cy == BRD:
-            alg[(cx, cy)].insert(0, ("[R: D2, F' U' F]", "1手セットアップ＋D面インターチェンジ"))
-        # 上の発展版だけどB2セットアップとどっちがいいか微妙
-        #elif cx == BRD and cy == DFL:
-        #    alg[(cx, cy)].insert(0, ("[R: F' U' F, D']", "1手セットアップ＋D面インターチェンジ"))
-        #elif cx == DFL and cy == BRD:
-        #    alg[(cx, cy)].insert(0, ("[R: D', F' U' F]", "1手セットアップ＋D面インターチェンジ"))
-
-        # 2015-05-02 こうさんより
-        # https://twitter.com/ko_obtk/status/594448148954648576
-        elif cx == BRD and cy == BLU:
-            alg[(cx, cy)].insert(0, ("[x: D2, L U2 L']", "持ち替え＋B面(D面)インターチェンジ"))
-        elif cx == BLU and cy == BRD:
-            alg[(cx, cy)].insert(0, ("[x: L U2 L', D2]", "持ち替え＋B面(D面)インターチェンジ"))
-
-        # 2015-05-05 Takeyより
-        # https://twitter.com/Takey_cube/status/595538299231424512
-        elif cx == FRU and cy == LBD:
-            alg[(cx, cy)].insert(0, ("[R, U L2 U']", "R列インターチェンジ"))
-        elif cx == LBD and cy == FRU:
-            alg[(cx, cy)].insert(0, ("[U L2 U', R]", "R列インターチェンジ"))
-
-        # 2015-05-06 こだまくんより
-        # https://twitter.com/DRFbot/status/595970864782409729
-        elif cx == LDF and cy == RDB:
-            alg[(cx, cy)].insert(0, ("[z': R U R2 U' R', F']", "持ち替え＋F列インターチェンジ"))
-        elif cx == RDB and cy == LDF:
-            alg[(cx, cy)].insert(0, ("[z': F', R U R2 U' R']", "持ち替え＋F列インターチェンジ"))
-
-        # 2015-05-07 みさわより
-        # [R' U R: R U' R', D2]
-        # https://twitter.com/msw_goham/status/596239496594624512
-        # 2015-05-07 Takeyより
-        # [R' F R F' R U' R', D2] or [U: R U2 R' U' R U R', D2]
-        # https://twitter.com/Takey_cube/status/596328748141543425
-        # https://twitter.com/Takey_cube/status/596329122298605568
-        elif cx == DLB and cy == URB:
-            alg[(cx, cy)].insert(0, ("[U: R2 U R2 U' R2, D2]", "1手セットアップ＋D面インターチェンジ"))
-        elif cx == URB and cy == DLB:
-            alg[(cx, cy)].insert(0, ("[U: D2, R2 U R2 U' R2]", "1手セットアップ＋D面インターチェンジ"))
-
-        # 2015-05-08 こだまくん/はやきくんより
-        # https://twitter.com/ceylon_cube/status/596346476856389635
-        # https://twitter.com/kumazawajiro/status/596347679786962944
-        elif cx == RDB and cy == FLD:
-            alg[(cx, cy)].insert(0, ("[R: R2 U R2 U' R2, D]", "1手セットアップ＋D面インターチェンジ"))
-        elif cx == FLD and cy == RDB:
-            alg[(cx, cy)].insert(0, ("[R: D, R2 U R2 U' R2]", "1手セットアップ＋D面インターチェンジ"))
-
-        # 2015-05-08 こだまくんより
-        # https://twitter.com/ceylon_cube/status/596601667681824768
-        elif cx == DFL and cy == BRD:
-            alg[(cx, cy)].insert(0, ("[x: R, U L U']", "持ち替え＋R列インターチェンジ"))
-        elif cx == BRD and cy == DFL:
-            alg[(cx, cy)].insert(0, ("[x: U L U', R]", "持ち替え＋R列インターチェンジ"))
-
-        # 2015-05-11 Takeyより
-        # https://twitter.com/Takey_cube/status/597747291005399040
-        elif cx == LFU and cy == FRU:
-            alg[(cx, cy)].insert(0, ("[x: U' L' U, R]", "持ち替え＋R列インターチェンジ"))
-        elif cx == FRU and cy == LFU:
-            alg[(cx, cy)].insert(0, ("[x: R, U' L' U]", "持ち替え＋R列インターチェンジ"))
-
-        # 2015-05-19 こうさんより
-        # https://twitter.com/ko_obtk/status/600587552739831808
-        elif cx == FUL and cy == DBR:
-            alg[(cx, cy)].insert(0, ("[R' U2 R, D]", "D面インターチェンジ"))
-        elif cx == DBR and cy == FUL:
-            alg[(cx, cy)].insert(0, ("[D, R' U2 R]", "D面インターチェンジ"))
-
-        # 2015-05-23追加 Takeyより
-        # https://twitter.com/Takey_cube/status/601675407235031040
-        elif cx == DLB and cy == LDF:
-            alg[(cx, cy)].insert(0, ("[F': D2, R U R']", "1手セットアップ＋D面インターチェンジ"))
-        elif cx == LDF and cy == DLB:
-            alg[(cx, cy)].insert(0, ("[F': R U R', D2]", "1手セットアップ＋D面インターチェンジ"))
-
-        # 2015-06-06追加 たくさんより
-        # https://twitter.com/gohamtakanai/status/605298627603365888
-        elif cx == LBD and cy == URB:
-            alg[(cx, cy)].insert(0, ("[L: U' L' U, R2]", "1手セットアップ＋R2法"))
-        elif cx == URB and cy == LBD:
-            alg[(cx, cy)].insert(0, ("[L: R2, U' L' U]", "1手セットアップ＋R2法"))
-
-        # 2015-06-06追加 こだまくんより
-        # https://twitter.com/ceylon_cube/status/605661741968551936
-        elif cx == RUF and cy == UBL:
-            alg[(cx, cy)].insert(0, ("[x': D', R U' R']", "1手セットアップ＋D面インターチェンジ"))
-        elif cx == UBL and cy == RUF:
-            alg[(cx, cy)].insert(0, ("[x': R U' R': D']", "1手セットアップ＋D面インターチェンジ"))
-
-        # 2015-06-09追加 こだまくんより
-        # https://twitter.com/ceylon_cube/status/608203436220424192
-        elif cx == LFU and cy == URB:
-            alg[(cx, cy)].insert(0, ("[x': U L' U', R2]", "持ち替え＋R2法"))
-        elif cx == URB and cy == LFU:
-            alg[(cx, cy)].insert(0, ("[x': R2, U L' U']", "持ち替え＋R2法"))
-
-        # 2015-06-25追加 こだまくんより
-        # https://twitter.com/ceylon_cube/status/613284001688596480
-        elif cx == RUF and cy == RDB:
-            alg[(cx, cy)].insert(0, ("[x: R2 D' R2 D R2, U]", "持ち替え＋U面インターチェンジ"))
-        elif cx == RDB and cy == RUF:
-            alg[(cx, cy)].insert(0, ("[x: U, R2 D' R2 D R2]", "持ち替え＋U面インターチェンジ"))
-
+        # 個別対応 カスタム手順はCSVから結合
+        for k, v in alg_custom.items():
+            alg[k].extend(v)
 
         if len(alg[(cx, cy)]) == 0:
             alg[(cx, cy)].append(("T", "<TODO>"))
