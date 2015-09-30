@@ -194,7 +194,7 @@ def get_random_reply_text():
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='DRF bot')
     parser.add_argument('--test', '-t', default=False, action='store_true',
-                        help='Test mode (default: False)')
+                        help='set up with test mode (default: False)')
     args = parser.parse_args()
 
     mode_test = args.test
