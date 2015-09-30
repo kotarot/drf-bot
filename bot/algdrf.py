@@ -610,9 +610,12 @@ with open('%s/csv/customs.csv' % PATH_TO_DRFBOT, 'r') as f:
     reader = csv.reader(f)
     header = next(reader)
     for line in reader:
-        cxs, cys = line[0], line[1]
-        algorithm, description = line[2], line[3]
-        alg_custom[(cornersidx[cxs], cornersidx[cys])].insert(0, (algorithm, description))
+        k = (line[0], line[1]) # key: (cx, cy)
+        v = (line[2], line[3]) # value: (algorithm, description)
+        if k not in alg_custom:
+            alg_custom[k] = [v]
+        else:
+            alg_custom[k].insert(0, v)
 print(alg_custom)
 
 alg = {}
