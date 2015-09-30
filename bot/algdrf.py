@@ -5,9 +5,10 @@
 DRFバッファのコーナー3-cycle手順
 """
 
-import sys
+import argparse
 import os
 import random
+import sys
 
 # Python Twitter Tools
 # https://github.com/sixohsix/twitter
@@ -23,6 +24,7 @@ ACCESS_TOKEN_SECRET = os.environ.get("DRFBOT_ACCESS_TOKEN_SECRET")
 
 # Other Configurations
 PATH_TO_DRFBOT = "%s/.." % os.path.abspath(os.path.dirname(__file__))
+mode_test = False
 
 
 ################################
@@ -915,16 +917,17 @@ def random_post():
         params = {"media[]": imagefile.read(), "status": status}
 
     # Twitter OAuth 認証 + REST
-    auth = OAuth(ACCESS_TOKEN, ACCESS_TOKEN_SECRET, CONSUMER_KEY, CONSUMER_SECRET)
-    t = Twitter(auth=auth)
-    try:
-        t.statuses.update_with_media(**params)
-    except TwitterError as e:
-        print("[Exception] TwitterError!")
-        print(e)
-    except TwitterHTTPError as e:
-        print("[Exception] TwitterHTTPError!")
-        print(e)
+    if not mode_test:
+        auth = OAuth(ACCESS_TOKEN, ACCESS_TOKEN_SECRET, CONSUMER_KEY, CONSUMER_SECRET)
+        t = Twitter(auth=auth)
+        try:
+            t.statuses.update_with_media(**params)
+        except TwitterError as e:
+            print("[Exception] TwitterError!")
+            print(e)
+        except TwitterHTTPError as e:
+            print("[Exception] TwitterHTTPError!")
+            print(e)
 
 
 # 手順一覧のHTMLを生成する
@@ -1020,19 +1023,21 @@ def gen_html(filename):
 # 単体実行では標準出力に表示
 # "--random-post" オプションでランダム投稿
 if __name__ == '__main__':
-    argvs = sys.argv
-    argc = len(argvs)
+    parser = argparse.ArgumentParser(description='DRF bot: algorithm script')
+    parser.add_argument('--test', '-t', default=False, action='store_true',
+                        help='set up with test mode (default: False)')
+    parser.add_argument('--random-post', '-r', default=False, action='store_true',
+                        help='post a ramdom algorithm (default: False)')
+    parser.add_argument('--gen-html', '-g', default=None, type=str,
+                        help='generate list of algorithms in html to the given path to file (default: None)')
+    args = parser.parse_args()
 
-    # オプション
-    print("[Info] argvs: ", argvs)
-    print("[Info] argc: ", argc)
-    if (1 < argc) and (argvs[1] == "--random-post"):
+    mode_test = args.test
+    print("[Info] mode_test:", mode_test)
+
+    if args.random_post:
         random_post()
-    elif (1 < argc) and (argvs[1] == "--gen-html"):
-        if argc < 3:
-            print("[Error] HTML filename is required.")
-        else:
-            print("[Info] filename: ", argvs[2])
-            gen_html(argvs[2])
+    elif args.gen_html:
+        gen_html(args.gen_html)
     else:
         show_all()
