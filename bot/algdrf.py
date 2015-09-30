@@ -5,9 +5,10 @@
 DRFバッファのコーナー3-cycle手順
 """
 
-import sys
+import argparse
 import os
 import random
+import sys
 
 # Python Twitter Tools
 # https://github.com/sixohsix/twitter
