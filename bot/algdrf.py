@@ -722,13 +722,15 @@ for cx in range(0, 24):
                     else:
                         alg[(cx, cy)].append(res)
 
-        # 個別対応 カスタム手順はCSVから結合
-        for k, v in alg_custom.items():
-            if k not in alg:
-                alg[k] = v
-            else:
-                alg[k].extend(v)
+# 個別対応 カスタム手順はCSVから結合
+for k, v in alg_custom.items():
+    if k not in alg:
+        alg[k] = v
+    else:
+        alg[k].extend(v)
 
+for cx in range(0, 24):
+    for cy in range(0, 24):
         if len(alg[(cx, cy)]) == 0:
             alg[(cx, cy)].append(("T", "<TODO>"))
 
