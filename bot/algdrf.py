@@ -724,7 +724,7 @@ for k, v in alg_custom.items():
     if k not in alg:
         alg[k] = v
     else:
-        alg[k].extend(v)
+        alg[k] = v + alg[k]
 
 for cx in range(0, 24):
     for cy in range(0, 24):
