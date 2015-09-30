@@ -6,12 +6,13 @@
 Bot本体
 """
 
-from datetime import datetime
+import argparse
 import csv
-import re
-import sys
+from datetime import datetime
 import os
 import random
+import re
+import sys
 
 # Python Twitter Tools
 # https://github.com/sixohsix/twitter
@@ -191,16 +192,12 @@ def get_random_reply_text():
 
 
 if __name__ == '__main__':
-    argvs = sys.argv
-    argc = len(argvs)
+    parser = argparse.ArgumentParser(description='DRF bot')
+    parser.add_argument('--test', '-t', default=False, action='store_true',
+                        help='Test mode (default: False)')
+    args = parser.parse_args()
 
-    # オプション
-    logger.info("[Info] argvs: %s", argvs)
-    logger.info("[Info] argc: %s", argc)
-    if (1 < argc) and (argvs[1] == "--test"):
-        mode_test = True
-    else:
-        mode_test = False
+    mode_test = args.test
     logger.info("[Info] mode_test: %s", mode_test)
 
     # CSV読み込み (リプライ)

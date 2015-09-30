@@ -1020,19 +1020,16 @@ def gen_html(filename):
 # 単体実行では標準出力に表示
 # "--random-post" オプションでランダム投稿
 if __name__ == '__main__':
-    argvs = sys.argv
-    argc = len(argvs)
+    parser = argparse.ArgumentParser(description='DRF bot: algorithm script')
+    parser.add_argument('--random-post', '-r', default=False, action='store_true',
+                        help='Random post (default: False)')
+    parser.add_argument('--gen-html', '-g', default=None, type=str,
+                        help='Path to output html filename (default: None)')
+    args = parser.parse_args()
 
-    # オプション
-    print("[Info] argvs: ", argvs)
-    print("[Info] argc: ", argc)
-    if (1 < argc) and (argvs[1] == "--random-post"):
+    if args.random_post:
         random_post()
-    elif (1 < argc) and (argvs[1] == "--gen-html"):
-        if argc < 3:
-            print("[Error] HTML filename is required.")
-        else:
-            print("[Info] filename: ", argvs[2])
-            gen_html(argvs[2])
+    elif args.gen_html:
+        gen_html(args.gen_html)
     else:
         show_all()
