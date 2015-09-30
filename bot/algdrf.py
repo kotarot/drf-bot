@@ -603,22 +603,6 @@ def pattern_aperm(cx, cy, premove):
 
 ################################
 # 手順生成
-
-# カスタム手順を CSV から読み込んでおく
-alg_custom = {}
-with open('%s/csv/customs.csv' % PATH_TO_DRFBOT, 'r') as f:
-    reader = csv.reader(f)
-    header = next(reader)
-    for line in reader:
-        if line[0] == '1':
-            k = (line[1], line[2]) # key: (cx, cy)
-            v = (line[3], line[4]) # value: (algorithm, description)
-            if k not in alg_custom:
-                alg_custom[k] = [v]
-            else:
-                alg_custom[k].insert(0, v)
-print(alg_custom)
-
 alg = {}
 for cx in range(0, 24):
     for cy in range(0, 24):
@@ -629,7 +613,6 @@ for cx in range(0, 24):
         if res[0] != "":
             alg[(cx, cy)].append(res)
             continue
-
 
         ################################
         #### インターチェンジパターン
@@ -722,6 +705,20 @@ for cx in range(0, 24):
                     else:
                         alg[(cx, cy)].append(res)
 
+# カスタム手順を CSV から読み込む
+alg_custom = {}
+with open('%s/csv/customs.csv' % PATH_TO_DRFBOT, 'r') as f:
+    reader = csv.reader(f)
+    header = next(reader)
+    for line in reader:
+        if line[0] == '1':
+            k = (cornersidx[line[1]], cornersidx[line[2]]) # key: (cx, cy)
+            v = (line[3], line[4]) # value: (algorithm, description)
+            if k not in alg_custom:
+                alg_custom[k] = [v]
+            else:
+                alg_custom[k].insert(0, v)
+print(alg_custom)
 # 個別対応 カスタム手順はCSVから結合
 for k, v in alg_custom.items():
     if k not in alg:
