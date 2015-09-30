@@ -813,7 +813,7 @@ def gen_html(filename):
     tpl = env.get_template('index.tpl')
     html = tpl.render({'rows': rows})
     with open(filename, 'w') as f:
-        f.write(html.encode('utf-8'))
+        f.write(html)
 
 
 # 単体実行では標準出力に表示

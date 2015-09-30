@@ -57,9 +57,9 @@
       <tr><th>Cycle</th><th>手順</th><th>分類</th></tr>
     </thead>
     <tbody>
-      {% for rows in rows -%}
+      {% for row in rows -%}
         {{ row }}
-      {%- endfor %}
+      {% endfor %}
     </tbody>
   </table>
 
