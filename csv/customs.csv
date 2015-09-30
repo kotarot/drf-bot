@@ -45,5 +45,7 @@ valid,X,Y,algorithm,description,comment
 1,URB,LFU,"[x': R2, U L' U']","持ち替え＋R2法","上の逆手順"
 1,RUF,RDB,"[x: R2 D' R2 D R2, U]","持ち替え＋U面インターチェンジ","2015-06-25追加 こだまくん https://twitter.com/ceylon_cube/status/613284001688596480"
 1,RDB,RUF,"[x: U, R2 D' R2 D R2]","持ち替え＋U面インターチェンジ","上の逆手順"
-1,LUB,URB,"[U' L' U, R2]","R2法","2015-09-30 追加 ゆう https://twitter.com/Yuu_999/status/646395618752135168"
+1,LUB,URB,"[U' L' U, R2]","R2法","2015-09-30追加 ゆう https://twitter.com/Yuu_999/status/646395618752135168"
 1,URB,LUB,"[R2, U' L' U]","R2法","上の逆手順"
+1,LUB,ULF,"[z: R U R2 U' R', F2]","2015-09-30追加 ゆう https://twitter.com/Yuu_999/status/648524292087398400"
+1,ULF,LUB,"[z: F2, R U R2 U' R']","上の逆手順"
