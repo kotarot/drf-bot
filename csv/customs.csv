@@ -1,5 +1,5 @@
 valid,X,Y,algorithm,description,comment
-1,DFL,URB,"U' L2 U, R2","R2法","R2/L2パターン (持ち替えなし)"
+1,DFL,URB,"[U' L2 U, R2]","R2法","R2/L2パターン (持ち替えなし)"
 1,URB,DFL,"[R2, U' L2 U]","R2法","R2/L2パターン (持ち替えなし)"
 1,DFL,UBL,"[L2, U R2 U']","L2法","R2/L2パターン (持ち替えなし)"
 1,UBL,DFL,"[U R2 U', L2]","L2法","R2/L2パターン (持ち替えなし)"
