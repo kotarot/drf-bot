@@ -718,7 +718,6 @@ with open('%s/csv/customs.csv' % PATH_TO_DRFBOT, 'r') as f:
                 alg_custom[k] = [v]
             else:
                 alg_custom[k].insert(0, v)
-print(alg_custom)
 # 個別対応 カスタム手順はCSVから結合
 for k, v in alg_custom.items():
     if k not in alg:
