@@ -1,0 +1,5 @@
+X,Y,algorithm,description,comment
+DFL,URB,"U' L2 U, R2","R2法",
+URB,DFL,"[R2, U' L2 U]","R2法",
+DFL,UBL,"[L2, U R2 U']","L2法",
+UBL,DFL,"[U R2 U', L2]","L2法",

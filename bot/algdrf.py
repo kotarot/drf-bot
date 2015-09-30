@@ -6,6 +6,7 @@ DRFバッファのコーナー3-cycle手順
 """
 
 import argparse
+import csv
 import os
 import random
 import sys
@@ -699,6 +700,13 @@ for cx in range(0, 24):
                     else:
                         alg[(cx, cy)].append(res)
 
+        # 個別対応
+        # カスタム手順として CSV から読み込み
+        with open('%s/csv/customs.csv' % PATH_TO_DRFBOT, 'r') as f:
+            reader = csv.reader(f)
+            header = next(reader)
+            for line in reader:
+                print(line)
 
         ################################
         #### 個別対応
