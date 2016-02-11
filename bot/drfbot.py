@@ -231,11 +231,12 @@ if __name__ == '__main__':
 
         # @メンション の対応
         is_mention = False
-        if ("id" in msg) and ("entities" in msg) and ("user_mentions" in msg["entities"]) and ("retweeted_status" not in msg):
-            user_mentions = msg["entities"]["user_mentions"]
-            for user_mention in user_mentions:
-                if screen_name != DRFBOT_SCREEN_NAME and user_mention["screen_name"] == DRFBOT_SCREEN_NAME:
-                    is_mention = True
+        if ("id" in msg) and ("entities" in msg) and ("user_mentions" in msg["entities"]):
+            if ("retweeted_status" not in msg) and ("quoted_status" not in msg):
+                user_mentions = msg["entities"]["user_mentions"]
+                for user_mention in user_mentions:
+                    if screen_name != DRFBOT_SCREEN_NAME and user_mention["screen_name"] == DRFBOT_SCREEN_NAME:
+                        is_mention = True
 
         if is_mention:
             id = msg["id"]
