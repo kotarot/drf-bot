@@ -7,8 +7,11 @@ Bot本体
 """
 
 import argparse
+import codecs
 import csv
 from datetime import datetime
+import io
+import sys
 import os
 import random
 import re
@@ -25,6 +28,8 @@ import algdrf
 #import prime
 import wcadb
 
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+
 
 # Configurations from 環境変数
 CONSUMER_KEY        = os.environ.get("DRFBOT_CONSUMER_KEY")
@@ -39,13 +44,7 @@ ADMIN_SCREEN_NAME  = "kotarotrd"
 PATH_TO_DRFBOT = "%s/.." % os.path.abspath(os.path.dirname(__file__))
 
 
-# For logging
-import logging
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
-logfilename = datetime.now().strftime("%Y%m%d-%H%M%S")
-logger.addHandler(logging.FileHandler("%s/logs/%s.log" % (PATH_TO_DRFBOT, logfilename), "a+"))
-logger.info("DRFbot has just started.")
+print("DRFbot has just started.")
 
 
 # トークン分割のパターン
@@ -79,13 +78,13 @@ def split_into_tokens(text):
     # だけ修正
     text = text.replace("&gt;", ">").replace("&lt;", "<")
     tokens = repatter_token.split(text)
-    logger.info("tokens: %s", tokens)
+    print("tokens: %s", tokens)
     # @メンション部と空文字は除外する
     trimedtokens = []
     for token in tokens:
         if token != "@DRFbot" and token != "@drfbot" and token != "":
             trimedtokens.append(token)
-    logger.info("trimedtokens: %s", trimedtokens)
+    print("trimedtokens: %s", trimedtokens)
     return trimedtokens
 
 
@@ -98,7 +97,7 @@ def split_into_corner_tokens(tokens):
         matched = repatter_corner.match(token)
         if matched:
             corners.append(matched.group())
-    logger.info("corners: %s", corners)
+    print("corners: %s", corners)
     return corners
 
 
@@ -111,7 +110,7 @@ def split_into_edge_tokens(tokens):
         matched = repatter_edge.match(token)
         if matched:
             edges.append(matched.group())
-    logger.info("edges: %s", edges)
+    print("edges: %s", edges)
     return edges
 
 
@@ -198,10 +197,10 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     mode_test = args.test
-    logger.info("[Info] mode_test: %s", mode_test)
+    print("[Info] mode_test: %s", mode_test)
 
     # CSV読み込み (リプライ)
-    with open("%s/csv/replies.csv" % PATH_TO_DRFBOT, "r") as f:
+    with codecs.open("%s/csv/replies.csv" % PATH_TO_DRFBOT, "r", "utf-8") as f:
         reader = csv.reader(f)
         header = next(reader)
         for line in reader:
@@ -210,8 +209,8 @@ if __name__ == '__main__':
             else:
                 replies[line[1]] = line[2]
 
-    logger.info("random_replies: %s", random_replies)
-    logger.info("replies: %s", replies)
+    print("random_replies: %s", random_replies)
+    print("replies: %s", replies)
 
     # Twitter OAuth 認証
     auth = OAuth(ACCESS_TOKEN, ACCESS_TOKEN_SECRET, CONSUMER_KEY, CONSUMER_SECRET)
@@ -222,8 +221,8 @@ if __name__ == '__main__':
     # User streams
     twitter_stream = TwitterStream(auth=auth, domain="userstream.twitter.com")
     for msg in twitter_stream.user():
-        logger.info("[Info] Timeline updated!")
-        logger.info(msg)
+        print("[Info] Timeline updated!")
+        print(msg)
 
         if "user" in msg:
             screen_name = msg["user"]["screen_name"]
@@ -240,7 +239,7 @@ if __name__ == '__main__':
 
         if is_mention:
             id = msg["id"]
-            logger.info("[Info] Mentioned from @%s (id=%s)", screen_name, str(id))
+            print("[Info] Mentioned from @%s (id=%s)", screen_name, str(id))
 
             # 返信用テキスト/画像
             reply_text = ""
@@ -257,11 +256,11 @@ if __name__ == '__main__':
                 try:
                     t.statuses.update(status=status)
                 except TwitterError as e:
-                    logger.error("[Exception] TwitterError!")
-                    logger.error(e)
+                    print("[Exception] TwitterError!")
+                    print(e)
                 except TwitterHTTPError as e:
-                    logger.error("[Exception] TwitterHTTPError!")
-                    logger.error(e)
+                    print("[Exception] TwitterHTTPError!")
+                    print(e)
                 sys.exit(0)
 
             # CSVパターンマッチング
@@ -295,7 +294,7 @@ if __name__ == '__main__':
                 reply_text = algorithm["text"]
                 if algorithm["cycle"] is not None:
                     reply_imgfilename = "%s/cubeimages/DRF_%s_%s.png" % (PATH_TO_DRFBOT, algorithm["cycle"][0], algorithm["cycle"][1])
-                    logger.info("imgfilename: %s", reply_imgfilename)
+                    print("imgfilename: %s", reply_imgfilename)
 
             # (Pattern B) DFバッファのエッジ3-cycle
             if reply_text == "":
@@ -317,15 +316,15 @@ if __name__ == '__main__':
             if reply_text != "" and str(id) != "":
                 status = "@" + screen_name + " " + reply_text
                 if reply_imgfilename == "":
-                    logger.info("[Info] About to reply")
+                    print("[Info] About to reply")
                     params = {"status": status, "in_reply_to_status_id": str(id)}
                 else:
-                    logger.info("[Info] About to reply *WITH MEDIA*")
+                    print("[Info] About to reply *WITH MEDIA*")
                     with open(reply_imgfilename, "rb") as imagefile:
                         params = {"media[]": imagefile.read(), "status": status, "in_reply_to_status_id": str(id)}
 
-                logger.info("status: %s", params["status"])
-                logger.info("in_reply_to_status_id: %s", params["in_reply_to_status_id"])
+                print("status: %s", params["status"])
+                print("in_reply_to_status_id: %s", params["in_reply_to_status_id"])
 
                 if not mode_test:
                     try:
@@ -334,8 +333,8 @@ if __name__ == '__main__':
                         else:
                             t.statuses.update_with_media(**params)
                     except TwitterError as e:
-                        logger.error("[Exception] TwitterError!")
-                        logger.error(e)
+                        print("[Exception] TwitterError!")
+                        print(e)
                     except TwitterHTTPError as e:
-                        logger.error("[Exception] TwitterHTTPError!")
-                        logger.error(e)
+                        print("[Exception] TwitterHTTPError!")
+                        print(e)

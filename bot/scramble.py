@@ -6,9 +6,7 @@
 スクランブルを投稿する
 """
 
-
 import subprocess
-import sys
 import os
 
 # Python Twitter Tools
@@ -30,6 +28,10 @@ def gen_scramble(type_scramble):
 
 
 if __name__ == '__main__':
+    import io
+    import sys
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+
     argvs = sys.argv
     argc = len(argvs)
 

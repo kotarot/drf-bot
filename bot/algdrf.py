@@ -6,11 +6,11 @@ DRFバッファのコーナー3-cycle手順
 """
 
 import argparse
+import codecs
 import csv
 from jinja2 import Environment, FileSystemLoader
 import os
 import random
-import sys
 
 # Python Twitter Tools
 # https://github.com/sixohsix/twitter
@@ -708,7 +708,7 @@ for cx in range(0, 24):
 
 # カスタム手順を CSV から読み込む
 alg_custom = {}
-with open('%s/csv/customs.csv' % PATH_TO_DRFBOT, 'r') as f:
+with codecs.open('%s/csv/customs.csv' % PATH_TO_DRFBOT, 'r', 'utf-8') as f:
     reader = csv.reader(f)
     header = next(reader)
     for line in reader:
@@ -812,13 +812,17 @@ def gen_html(filename):
     env = Environment(loader=FileSystemLoader('./', encoding='utf8'))
     tpl = env.get_template('index.tpl')
     html = tpl.render({'rows': rows})
-    with open(filename, 'w') as f:
+    with codecs.open(filename, 'w', 'utf-8') as f:
         f.write(html)
 
 
 # 単体実行では標準出力に表示
 # "--random-post" オプションでランダム投稿
 if __name__ == '__main__':
+    import io
+    import sys
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+
     parser = argparse.ArgumentParser(description='DRF bot: algorithm script')
     parser.add_argument('--test', '-t', default=False, action='store_true',
                         help='set up with test mode (default: False)')

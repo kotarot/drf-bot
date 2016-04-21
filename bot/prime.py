@@ -5,6 +5,12 @@
 素数とかなにか
 """
 
+import io
+import sys
+
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+
+
 # 素数判定
 # http://d.hatena.ne.jp/pashango_p/20090704/1246692091
 def is_prime(q):

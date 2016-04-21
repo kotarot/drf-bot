@@ -5,10 +5,14 @@
 WCAデータベースに関するなにか
 """
 
+import io
 import os
+import sys
 
 import pymysql
 import pymysql.cursors
+
+#sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 
 
 # Configurations from 環境変数
